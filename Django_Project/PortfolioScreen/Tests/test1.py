@@ -15,3 +15,7 @@ class TestHelloWorld(unittest.TestCase):
 		stock = Stock
 		stock.ticker = "TKG"
 		self.assertEquals(stock.ticker,"TKG")
+
+if __name__ == '__main__':
+    import xmlrunner
+    unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))

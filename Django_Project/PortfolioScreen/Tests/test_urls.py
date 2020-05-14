@@ -1,5 +1,6 @@
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
+import unittest
 from ..views import PortfolioScreen,about,chart,table,settings
 
 class TestClass(SimpleTestCase):
@@ -29,3 +30,7 @@ class TestClass(SimpleTestCase):
         url = reverse('portfolio-settings')
         print(resolve(url))
         self.assertEquals(resolve(url).func, settings)
+
+if __name__ == '__main__':
+    import xmlrunner
+    unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))

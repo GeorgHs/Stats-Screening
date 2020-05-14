@@ -2,6 +2,7 @@ from django.test import TestCase
 from ..Portfolio import Portfolio
 from ..Figure import Figure
 from ..Stock import Stock
+import unittest
 from ..Chart import Chart
 from ..Toolbox import Toolbox
 
@@ -34,3 +35,7 @@ class TestModels(TestCase):
 
     def test_whether_stock_ticker_is_in_portfolio(self):
         self.assertEqual(self.portfolio1.getStock('APC').ticker,'APC')
+
+if __name__ == '__main__':
+    import xmlrunner
+    unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))

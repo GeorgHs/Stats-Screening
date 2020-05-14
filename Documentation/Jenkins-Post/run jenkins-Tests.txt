@@ -1,0 +1,18 @@
+C:\Program Files (x86)\Jenkins\workspace\Stats-Screening\Django_Project>manage.py test --verbosity=2 
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+
+test_whether_stock_append_to_portfolio (PortfolioScreen.Tests.test_objects.TestModels) ... ok
+test_whether_stock_ticker_is_in_portfolio (PortfolioScreen.Tests.test_objects.TestModels) ... ok
+test_project_about_GET (PortfolioScreen.Tests.test_views.TestViews) ... ok
+test_about_url_is_resolved (PortfolioScreen.Tests.test_urls.TestClass) ... ok
+test_chart_url_is_resolved (PortfolioScreen.Tests.test_urls.TestClass) ... ok
+test_main_url_is_resolved (PortfolioScreen.Tests.test_urls.TestClass) ... ok
+test_settings_url_is_resolved (PortfolioScreen.Tests.test_urls.TestClass) ... ok
+test_table_url_is_resolved (PortfolioScreen.Tests.test_urls.TestClass) ... ok
+test_equals (PortfolioScreen.Tests.test1.TestHelloWorld) ... ok
+test_secondTry (PortfolioScreen.Tests.test1.TestHelloWorld) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.033s
+
+OK
