@@ -1,0 +1,27 @@
+@startuml
+
+|User|
+
+start
+
+:pull up dialog in which indicies \n with tickers can be selected \n or single tickers can be added;
+|System|
+
+:go into indices and check what \n type of tickers are contained;
+:fetch indicies;
+if (if yfinance works)
+:get single stocks from indices through yfinance;
+else (alternatively)
+:get single stocks through Webscraping;
+endif
+
+:load all of those tickers into a python dictonary;
+:now this list can be accessed by other "Use Cases";
+|GUI|
+split
+:add Stock to list;
+split again
+:create new Portfolio;
+end split
+stop
+@enduml

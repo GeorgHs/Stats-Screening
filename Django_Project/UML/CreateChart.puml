@@ -1,0 +1,32 @@
+@startuml
+
+|User|
+start
+:Open Portfolio;
+:Choose Tab Charts;
+|System|
+|GUI|
+:shows Tab Charts;
+|System|
+:collect all figures that are available\nfor that particular portfolio;
+|GUI|
+:App ought to show user all the figures available;
+|User|
+:ComboBox: select the figure you want to use;
+:press button choose after \nyou have choosen the \nright figure;
+|System|
+:connect with API and check;
+|GUI|
+:ticker is now green;
+|User|
+:press add button;
+|System|
+:all relevant fields/columns are fetched from JSON;
+:all relevant fields of \nstock are loaded into \nportfolio;
+|GUI|
+:close dialog;
+:add stock as item to portfolio-list;
+
+stop
+
+@enduml

@@ -1,0 +1,12 @@
+@startuml
+
+
+[Front-End] -- [Back-End]
+
+
+skinparam component {
+	backgroundColor<< >> DarkKhaki
+	backgroundColor<< >> Green
+}
+
+@enduml

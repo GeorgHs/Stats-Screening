@@ -1,0 +1,32 @@
+@startum l
+
+|User|
+start
+:Open Portfolio;
+:Press "Add Stock";
+|System|
+|GUI|
+:show dialog;
+
+|User|
+while (Ticker is Not available)
+|User|
+:enter ticker (its in red);
+:press "check availability";
+|System|
+    :connect with API and check;
+endwhile (available)
+|GUI|
+:ticker is now green;
+|User|
+:press add button;
+|System|
+:all relevant fields/columns are fetched from yfinance and then from Python dictonary/Pandas DataFrame;
+:all relevant fields of \nstock are loaded into \nportfolio;
+|GUI|
+:close dialog;
+:add stock as item to portfolio-list;
+
+stop
+
+@enduml
