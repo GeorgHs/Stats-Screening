@@ -24,3 +24,4 @@ def chart(request):
 
 def settings(request):
     return render(request, 'pages/settings.html', {'title': 'Settings'})
+
