@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # 'Users.apps.UsersConfig',
 
 INSTALLED_APPS = [
+    # 'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -125,3 +126,5 @@ STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = 'PortfolioScreen'
 LOGIN_URL = 'login'
+
+#CRISPY_TEMPLATE_PACK = 'bootstrap4'

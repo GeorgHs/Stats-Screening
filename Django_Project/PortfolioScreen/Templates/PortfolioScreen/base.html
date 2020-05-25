@@ -235,21 +235,16 @@
             Links
         </div>
         <div class="col-md-11">
-            {% block content %}{% endblock %}
-        </div>
-    </div>
-    <!--  <div class="row">
-          <div class="col-md-11">
-              {% if messages %}
+        {% if messages %}
               {% for message in messages %}
               <div class="alert alert-{{ message.tags }}">
                   {{ message }}
               </div>
               {% endfor %}
-              {% endif %}
-
-          </div>
-      </div> -->
+        {% endif %}
+        {% block content %}{% endblock %}
+        </div>
+    </div>
 </main>
 
 <!-- Optional JavaScript -->

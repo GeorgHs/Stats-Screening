@@ -15,8 +15,9 @@
     </li>
 </ul>
 
-    {% for Stock in Stocks %}
-        {{ Stock.ISIN }}<br>
-        {{ Stock.PortionOfPortfolio}}<br>
+    {% for Aktie in Portfolio.stocks.all() %}
+        {{ Stock }}<br>
+        {{ Portfolio.fundmanager }}<br>
+        {{ Portfolio.stocks. }}<br>
     {% endfor %}
 {% endblock content %}
