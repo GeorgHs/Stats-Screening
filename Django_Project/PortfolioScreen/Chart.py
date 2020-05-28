@@ -3,13 +3,14 @@ from typing import List
 Portfolio = List[float]
 
 
+
 class Chart():
-    def __int__(self, ChartType, Timehorizon, portfolio):
+    def __int__(self, ChartType='line', Timehorizon='2Y', Portfolio=''):
         self.chartType = ChartType
         self.timeHorizon = Timehorizon
-        #es kann immer nur einem Portfolio ein Chart zu ein und derselben Zeit zugeordnet werden!
-        self.portfolio = portfolio
-        #so far merely a pure performance chart is being displayed
+        # es kann immer nur einem Portfolio ein Chart zu ein und derselben Zeit zugeordnet werden!
+        self.portfolio = Portfolio
+        # so far merely a pure performance chart is being displayed
 
     @property
     def chartType(self):

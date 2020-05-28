@@ -1,15 +1,16 @@
 from builtins import property, type, set
 
-#subclass of Stock
+# subclass of Stock
+
 
 class Portfolio():
 
-    def __init__(self, portfolioNameValue = "Portfolio", inceptionDateValue = '01-01-2015', stockListvalue = None, figureListvalue = None, chartTypevalue = None):
+    def __init__(self, portfolioNameValue="Portfolio", inceptionDateValue='01-01-2015', stockListvalue=None, figureListvalue=None, chartTypevalue=None):
         self._portfolioName = portfolioNameValue
         self._inceptionDate = inceptionDateValue
         self._chartType = chartTypevalue
 
-        #set up dict
+        # set up dict
         if stockListvalue is None:
             self._stockList = {  # key, #value
                 '': '',
@@ -24,31 +25,32 @@ class Portfolio():
         else:
             self._figureList = figureListvalue
 
-
     # nur Stock-Objekt rein
+
     def addStock(self, stock):
         name_stock = stock.ticker
         self._stockList[name_stock] = stock
 
     # nur Stock-Objekt rein
     def removeStock(self, stock):
-        #create for each which finds the specified Stock and then removes it
+        # create for each which finds the specified Stock and then removes it
         del self._stockList[stock.ticker]
 
     def getStock(self, ticker):
-        ##enter name and then find Stock and return it's object
+        # enter name and then find Stock and return it's object
         return self._stockList[ticker]
 
-
     # hier darf nur das object Figure eingefügt werden
+
     def addfigure(self, figure):
         self.stockList[figure.figurename()] = figure
     # hier darf nur das object Figure eingefügt werden
+
     def removefigure(self, figure):
-        #create for each which finds the specified Stock and then removes it
+        # create for each which finds the specified Stock and then removes it
         del self.stockList[figure.figurename()]
 
-    def getfigure(self, figureid = None, figurename = None):
+    def getfigure(self, figureid=None, figurename=None):
         if figureid is None and figurename is not None:
 
             return '{}'.format(self.figureList[figurename])
@@ -62,11 +64,9 @@ class Portfolio():
     def portfolioName(self):
         return '{}'.format(self._portfolioName)
 
-
     @portfolioName.setter
     def portfolioName(self, value):
         self._portfolioName = value
-
 
     @property
     def inceptionDate(self):
@@ -76,7 +76,6 @@ class Portfolio():
     def inceptionDate(self, value):
         self._inceptionDate = value
 
-
     @property
     def stockList(self):
         return self._stockList
@@ -84,7 +83,6 @@ class Portfolio():
     @stockList.setter
     def stockList(self, value):
         self._stockList = value
-
 
     @property
     def figureList(self):
@@ -101,7 +99,4 @@ class Portfolio():
     @chartType.setter
     def chartType(self, value):
         self._chartType = value
-
-
-
 

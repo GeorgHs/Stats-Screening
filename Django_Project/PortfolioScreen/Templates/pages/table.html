@@ -15,9 +15,14 @@
     </li>
 </ul>
 
-    {% for Aktie in Portfolio.stocks.all() %}
-        {{ Stock }}<br>
+
+Portfolioparam: {{Portfolioparam}}<br>
+    {% for Portfolio in Portfolios %}
+        {{ Portfolio.portfolioname }}<br>
         {{ Portfolio.fundmanager }}<br>
-        {{ Portfolio.stocks. }}<br>
+        {% for stock in Stocks %}
+        {{stock}}<br>
+        {% endfor %}
+        <br><br>
     {% endfor %}
 {% endblock content %}

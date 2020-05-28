@@ -11,4 +11,10 @@ urlpatterns = [
     path('table/', views.table, name="portfolio-table"),
     path('chart/', views.chart, name="portfolio-chart"),
     path('settings/', views.settings, name="portfolio-settings"),
+    path('table/<portfolio>/', views.table_portfolio,
+         name="portfolio-table-pass"),
+    path('chart/<portfolio>/', views.chart_portfolio,
+         name="portfolio-chart-pass"),
+    path('settings/<portfolio>/', views.settings_portfolio,
+         name="portfolio-settings-pass"),
 ]

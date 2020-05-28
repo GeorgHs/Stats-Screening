@@ -22,19 +22,29 @@ def countnumber(sender, instance, **kwargs):
 post_save.connect(countnumber, sender=Chart)
 
 
-class PortfolioFigure(models.Model):
-    portfolioname = models.CharField(max_length=60)
-    figureValue = models.FloatField(max_length=60)
-
-    def __str__(self):
-        return self.portfolioname
-
-
 class Stock(models.Model):
     ISIN = models.CharField(max_length=60)
 
     def __str__(self):
         return self.ISIN
+
+
+class Portfolio(models.Model):
+    portfolioname = models.CharField(max_length=60)
+    fundmanager = models.ForeignKey(User, on_delete=models.CASCADE)
+    stock = ManyToManyField(Stock)
+
+    def __str__(self):
+        return self.portfolioname
+
+
+class PortfolioFigure(models.Model):
+    figurename = models.CharField(max_length=60, default='beta')
+    figureValue = models.FloatField(max_length=60)
+    portfolioname = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.figurename
 
 
 class StockFigure(models.Model):
@@ -44,16 +54,6 @@ class StockFigure(models.Model):
 
     def __str__(self):
         return self.stockname
-
-
-class Portfolio(models.Model):
-    portfolioname = models.CharField(max_length=60)
-    fundmanager = models.ForeignKey(User, on_delete=models.CASCADE)
-    stock = ManyToManyField(Stock)
-    figure = models.ForeignKey(PortfolioFigure, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.portfolioname
 
 
 # Benutzer noch einrichten
