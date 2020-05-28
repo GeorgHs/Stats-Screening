@@ -9,6 +9,7 @@ class Portfolio():
         self._inceptionDate = inceptionDateValue
         self._chartType = chartTypevalue
 
+        
         #set up dict
         if stockListvalue is None:
             self._stockList = {  # key, #value
@@ -17,6 +18,7 @@ class Portfolio():
         else:
             self._stockList = stockListvalue
 
+            
         if figureListvalue is None:
             self._figureList = {  # key, #value
                 '': '',
@@ -36,7 +38,7 @@ class Portfolio():
         del self._stockList[stock.ticker]
 
     def getStock(self, ticker):
-        ##enter name and then find Stock and return it's object
+        #enter name and then find Stock and return it's object
         return self._stockList[ticker]
 
 
