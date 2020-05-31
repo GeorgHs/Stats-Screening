@@ -1,16 +1,45 @@
 from django.shortcuts import render
 from django.http import HttpResponse, request
 from .models import Stock, Portfolio, PortfolioFigure, Chart, StockFigure
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
 from django.template import context
 
 
 @login_required
 def PortfolioScreen(request):
     context = {
-        'Portfolio': Portfolio.objects.all()
+        'Users': request.user,
+        'Portfolios': Portfolio.objects.filter(fundmanager__exact=request.user),
     }
     return render(request, 'PortfolioScreen/main.html', context)
+
+
+@login_required
+def datadisplay(request, portfolio):
+    context = {
+        'UserSpec': request.user,
+        'Portfolioparam': portfolio,
+        'Portfolios': Portfolio.objects.filter(fundmanager__exact=request.user),
+        # request.user.objects(),
+        'PortfolioObject': Portfolio.objects.get(portfolioname__exact=portfolio),
+        'Stocks': Portfolio.objects.get(portfolioname__exact=portfolio).stock.all(),
+        'title': "Portfolio Table",
+        'PortfolioFigures': Portfolio.objects.filter(),
+        # nur für diesen Benutzer genutzte Portfolios auswählen! (oben in POrtfolioScreen)
+        # aus den Portfolios die einzelnen Aktien auswählen!
+        # die zugehörigen Portfolio-Kennzahlen
+    }
+    return render(request, 'PortfolioScreen/datadisplay.html', context)
+
+
+@login_required
+def operation(request, ISIN):
+    iscorrect = False
+    print("executed", ISIN)
+    if ISIN == "hallo":
+        iscorrect = True
+    return iscorrect
 
 
 @login_required
@@ -27,17 +56,8 @@ def table(request):
 
 
 @login_required
-def table_portfolio(request, portfolio):
-    context = {
-        'Portfolioparam': portfolio,
-        'Portfolios': Portfolio.objects.all(),
-        'Stocks': Stock.objects.all(),
-        'title': "Portfolio Table",
-        'PortfolioFigures': Portfolio.objects.filter(),
-        # nur für diesen Benutzer genutzte Portfolios auswählen! (oben in POrtfolioScreen)
-        # aus den Portfolios die einzelnen Aktien auswählen!
-        # die zugehörigen Portfolio-Kennzahlen
-    }
+def table_portfolio(request):
+
     return render(request, 'pages/table.html', context)
 
 

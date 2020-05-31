@@ -4,6 +4,7 @@ from django.db.models import ManyToManyField, CharField, ForeignKey, OneToOneFie
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.urls import reverse
 
 
 class Chart(models.Model):
@@ -36,6 +37,9 @@ class Portfolio(models.Model):
 
     def __str__(self):
         return self.portfolioname
+
+    def get_absolute_url(self):
+        return reverse("datadisplay-pass", kwargs={"portfolio": self.portfolioname})
 
 
 class PortfolioFigure(models.Model):

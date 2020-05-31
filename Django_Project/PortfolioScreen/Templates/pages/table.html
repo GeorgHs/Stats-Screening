@@ -1,28 +1,26 @@
-{% extends "PortfolioScreen/base.html" %}
-{% block content %}
-<ul class="nav nav-pills">
-    <li class="nav-item">
-        <a class="nav-link active" id="navtable" href="/table">Tabelle</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="navchart" href="/chart">Charts</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="navsettings" href="/settings">Settings</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-    </li>
-</ul>
+<table>
+    <tr>
+        <th>ISIN</th>
+        <th>Contact</th>
+        <th>Country</th>
+    </tr>
+    <tr>
+        Alfreds Futterkiste</td>
+        <td>Maria Anders</td>
+        <td>Germany</td>
+    </tr>
 
 
-Portfolioparam: {{Portfolioparam}}<br>
-    {% for Portfolio in Portfolios %}
-        {{ Portfolio.portfolioname }}<br>
-        {{ Portfolio.fundmanager }}<br>
-        {% for stock in Stocks %}
-        {{stock}}<br>
-        {% endfor %}
-        <br><br>
+
+
+    {% for stock in Stocks %}
+    <tr>
+        <td>{{stock.ISIN}}</td>
+        <td>{{stock.ISIN}}</td>
+    </tr>
     {% endfor %}
-{% endblock content %}
+
+</table>
+
+<br>
+<br>
