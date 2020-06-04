@@ -7,6 +7,10 @@ from django.db.models.signals import post_save
 from django.urls import reverse
 
 
+class Tickersym:
+    ticker = models.CharField()
+
+
 class Chart(models.Model):
     chartName = models.CharField(
         max_length=60, blank=True, default='chart')

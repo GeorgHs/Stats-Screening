@@ -4,6 +4,8 @@ from .models import Stock, Portfolio, PortfolioFigure, Chart, StockFigure
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.template import context
+from django.http.response import JsonResponse
+import yfinance as yf
 
 
 @login_required
@@ -34,12 +36,48 @@ def datadisplay(request, portfolio):
 
 
 @login_required
-def operation(request, ISIN):
-    iscorrect = False
-    print("executed", ISIN)
-    if ISIN == "hallo":
-        iscorrect = True
-    return iscorrect
+def create_new_portfolio(request):
+    if request.method == 'POST':
+        print(request.POST.get('stockList'))
+
+
+@login_required
+def validate_ticker_symbol(request):
+    if request.method == "POST":
+        tickersymbol = request.POST.get('tickersymbPost')
+        exists = False
+        priceonStock = ''
+        nameonStock = ''
+        currencyonStock = ''
+        try:
+
+            tksym = yf.Ticker(str(tickersymbol))
+            datastock = tksym.info
+            print(datastock)
+            exists = True
+            nameonStock = datastock['shortName']
+            # das hier ist float
+            priceonStock = datastock['regularMarketPrice']
+            currencyonStock = datastock['currency']
+        except:
+            exists = False
+        Stockdata = {
+            'exists': exists,
+            'tickersymb': tickersymbol,
+            'name': nameonStock if len(nameonStock) != 0 else '',
+            'currency': currencyonStock if len(currencyonStock) != 0 else '',
+            # das hier ist float
+            'price': priceonStock if priceonStock != 0 else 0,
+        }
+        # hier den Gültigkeitswert des Tickers abspeichern!
+        request.session['exists'] = Stockdata
+        return JsonResponse(request.session.get('exists'), safe=False)
+    else:
+        return JsonResponse(request.session.get('exists'), safe=False)
+
+
+def ajax_method():
+    return HttpResponse("Response")
 
 
 @login_required

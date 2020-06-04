@@ -20,87 +20,6 @@
     {% else %}
     <title>Screening Portfolio</title>
     {% endif %}
-    <script>
-        $(function () {
-            $('.list-group.checked-list-box .list-group-item').each(function () {
-
-                // Settings
-                var $widget = $(this),
-                    $checkbox = $('<input type="checkbox" class="hidden" />'),
-                    color = ($widget.data('color') ? $widget.data('color') : "primary"),
-                    style = ($widget.data('style') == "button" ? "btn-" : "list-group-item-"),
-                    settings = {
-                        on: {
-                            icon: 'glyphicon glyphicon-check'
-                        },
-                        off: {
-                            icon: 'glyphicon glyphicon-unchecked'
-                        }
-                    };
-
-                $widget.css('cursor', 'pointer')
-                $widget.append($checkbox);
-
-                // Event Handlers
-                $widget.on('click', function () {
-                    $checkbox.prop('checked', !$checkbox.is(':checked'));
-                    $checkbox.triggerHandler('change');
-                    updateDisplay();
-                });
-                $checkbox.on('change', function () {
-                    updateDisplay();
-                });
-
-
-                // Actions
-                function updateDisplay() {
-                    var isChecked = $checkbox.is(':checked');
-
-                    // Set the button's state
-                    $widget.data('state', (isChecked) ? "on" : "off");
-
-                    // Set the button's icon
-                    $widget.find('.state-icon')
-                        .removeClass()
-                        .addClass('state-icon ' + settings[$widget.data('state')].icon);
-
-                    // Update the button's color
-                    if (isChecked) {
-                        $widget.addClass(style + color + ' active');
-                    } else {
-                        $widget.removeClass(style + color + ' active');
-                    }
-                }
-
-                // Initialization
-                function init() {
-
-                    if ($widget.data('checked') == true) {
-                        $checkbox.prop('checked', !$checkbox.is(':checked'));
-                    }
-
-                    updateDisplay();
-
-                    // Inject the icon if applicable
-                    if ($widget.find('.state-icon').length == 0) {
-                        $widget.prepend('<span class="state-icon ' + settings[$widget.data('state')].icon + '"></span>');
-                    }
-                }
-
-                init();
-            });
-
-            $('#get-checked-data').on('click', function (event) {
-                event.preventDefault();
-                var checkedItems = {}, counter = 0;
-                $("#check-list-box li.active").each(function (idx, li) {
-                    checkedItems[counter] = $(li).text();
-                    counter++;
-                });
-                $('#display-json').html(JSON.stringify(checkedItems, null, '\t'));
-            });
-        });
-    </script>
 
 </head>
 
@@ -117,7 +36,7 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarToggle">
                     <div class="navbar-nav mr-auto">
-                        <a class="nav-item nav-link" data-toggle="modal" data-target="#myModal" href="#">New
+                        <a class="nav-item nav-link" data-toggle="modal" data-target="#NewPortfolio" href="#">New
                             Portfolio</a>
 
                         <a class="nav-item nav-link" href="/">Screening Portfolio</a>
@@ -125,7 +44,7 @@
                     </div>
                     <!-- Navbar Right Side -->
                     <div class="navbar-nav">
-                        {% if Users.is_authenticated %}
+                        {% if user.is_authenticated %}
                         <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
                         <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
                         {% else %}
@@ -140,7 +59,7 @@
     </header>
 
 
-    {% include 'NewPortfolio.html' %}
+    {% include '../Operations/NewPortfolio.html' %}
 
 
     <main role="main">
@@ -157,9 +76,8 @@
     </main>
 
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
         crossorigin="anonymous"></script>
