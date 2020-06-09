@@ -28,10 +28,18 @@ post_save.connect(countnumber, sender=Chart)
 
 
 class Stock(models.Model):
-    ISIN = models.CharField(max_length=60)
+    Tickersymbol = models.CharField(max_length=60)
 
     def __str__(self):
-        return self.ISIN
+        return self.Tickersymbol
+
+
+class OverallFigure(models.Model):
+    overallfigurename = models.CharField(max_length=60, default='asdf')
+    pythoncode = models.TextField(max_length=60, default='asdf')
+
+    def __str__(self):
+        return self.overallfigurename
 
 
 class Portfolio(models.Model):
@@ -50,6 +58,8 @@ class PortfolioFigure(models.Model):
     figurename = models.CharField(max_length=60, default='beta')
     figureValue = models.FloatField(max_length=60)
     portfolioname = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
+    portfoliomainfigure = models.ForeignKey(
+        OverallFigure, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.figurename
@@ -59,9 +69,10 @@ class StockFigure(models.Model):
     stockname = models.CharField(max_length=60)
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
     stockfigureValue = models.FloatField(max_length=60)
+    stockmainfigure = models.ForeignKey(
+        OverallFigure, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.stockname
 
-
-# Benutzer noch einrichten
+    # Benutzer noch einrichten

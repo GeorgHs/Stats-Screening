@@ -1,0 +1,109 @@
+<style>
+    /* Kontextmenü */
+
+    .custom-cm {
+        background-color: white;
+        border: 1px solid gray;
+        box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+        display: none;
+        padding: 10px 0;
+        position: absolute;
+        z-index: 100;
+        top: 0;
+        left: 0;
+        width: 200px;
+    }
+
+    .custom-cm__item {
+        cursor: pointer;
+        padding: 8px 15px;
+    }
+
+    .custom-cm__item:hover {
+        background-color: #f8f8f8;
+    }
+
+    .custom-cm__divider {
+        border-bottom: 1px solid #eeeeee;
+        margin: 1px 0;
+    }
+</style>
+
+
+<!-- Kontextmenue -->
+<div class="custom-cm" id="portfolio-context">
+    <div class="custom-cm__item">Delete Portfolio</div>
+    <div class="custom-cm__item">asdfasdf</div>
+    <div class="custom-cm__divider"></div>
+</div>
+
+<div class="custom-cm" id="figures-context">
+    <div class="custom-cm__item">Add Figure</div>
+    <div class="custom-cm__item">Create New Figure</div>
+    <div class="custom-cm__divider"></div>
+</div>
+
+<div class="custom-cm" id="table-context">
+    <div class="custom-cm__item">Refresh whole table</div>
+    <div class="custom-cm__item"></div>
+    <div class="custom-cm__divider"></div>
+</div>
+
+<script>
+    // das Kontextmenue laden!
+    const cmPC = document.getElementById('portfolio-context')
+    const cmFC = document.getElementById('figures-context')
+    const cmTC = document.getElementById('table-context')
+
+    function showContextMenu(cmtype, show = true) {
+        cmtype.style.display = show ? 'block' : 'none'
+    }
+
+
+
+    $('#portfolios').contextmenu(function (e) {
+        e.preventDefault()
+        if (!$('#NewPortfolio').hasClass('in')) {
+            showContextMenu(cmPC, true)
+            console.log(e)
+            cmPC.style.top = e.clientY //- cmPC.offsetTop;
+            cmPC.style.left = e.clientX //- cmPC.offsetLeft;
+        }
+    })
+
+    cmFC.addEventListener('contextmenu', (e) => {
+        e.preventDefault()
+        if (!$('#NewPortfolio').hasClass('in')) {
+            showContextMenu(cmFC, true)
+            cmFC.style.top = e.y - document.getElementById("figures-context").offsetTop;
+            cmFC.style.left = e.x - document.getElementById("figures-context").offsetLeft;
+        }
+    })
+
+    cmTC.addEventListener('contextmenu', (e) => {
+        e.preventDefault()
+        if (!$('#NewPortfolio').hasClass('in')) {
+            showContextMenu(cmTC, true)
+            cmTC.style.top = e.y - document.getElementById("table-context").offsetTop;
+            cmTC.style.left = e.x - document.getElementById("table-context").offsetLeft;
+        }
+    })
+
+    window.addEventListener('click', (e) => {
+        showContextMenu(document.querySelector('.custom-cm'), false);
+    })
+
+
+    $('#1context').click(function (e) {
+        alert("first one")
+    })
+    $('#2context').click(function (e) {
+        alert("second one")
+    })
+    $('#3context').click(function (e) {
+        alert("third one")
+    })
+    $('#4context').click(function (e) {
+        alert("fourth one")
+    })
+</script>

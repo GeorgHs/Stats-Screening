@@ -1,0 +1,170 @@
+<style>
+
+
+</style>
+
+<div class="modal" id="AddStock">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add New Stock</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm">
+                            <input type="text" class="form-control" id="inputticker-add-stock" aria-describedby="Ticker"
+                                placeholder="TSLA">
+                            <small id="loadata-add-stock" class="form-text text-muted">Ticker: TSLA for Tesla, AAPL for
+                                Apple,...</small>
+                        </div>
+                        <div class="col-lg">
+                            <button type="button" id="checkAvail-add-stock" class="btn btn-danger">Available?</button>
+                            <button id="addbutton-add-stock" type="button" class="btn btn-success"
+                                style="font-size: x-large;">Add</button>
+                            <!-- Wenn klappt, dann einfügen! -->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg">
+                            <p style="text-align:center;">Stocks</p>
+                            <div class="well" style="max-height: 300px;overflow: auto;">
+                                <ul class="list-group checked-list-box" id="stock-modal-list-add-stock">
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Abort</button>
+                <button id="add-add-stock" type="button" class="btn btn-primary">Add Stock to current
+                    portfolio</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% block javascript %}
+<script>
+    $(document).ready(function loader() {
+        $('#addbutton-add-stock').hide()
+        $("#checkAvail-add-stock").attr("class", "btn btn-danger");
+
+
+        $('#add-add-stock').on('click', function eingabe() {
+            alleStocks = $('#stock-modal-list-add-stock').children()
+            stockListe = {}
+            figureListe = []
+            for (i = 1; i <= alleStocks.length; i++) {
+                tickerausgabe = $('#stock-modal-list-add-stock li:nth-child(' + i + ')').attr('stockModalName')
+                stockListe[i] = tickerausgabe
+                figureausgabe = $('#figure-modal-list-add-stock li:nth-child(' + i + ')').attr('stockModalName')
+                figureListe.push(figureausgabe)
+            }
+
+
+            $.post("{% url 'add_stock_to_portfolio' %}",
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    portfolionamepost: "{{ Portfolioparam }}",
+                    stocklistepost: stockListe,
+                },
+                function (data) {
+                    if (data.status == 1) {
+                        //Fehler in diesem Fall
+                        alert(data.message)
+                    } else {
+                        alert(data.message)
+                        window.location.pathname = data.redirecturl
+                    }
+                }
+            );
+        })
+
+
+
+        $('#AddStock').on('hidden.bs.modal', function (e) {
+            $('#addbutton-add-stock').hide()
+            $("#checkAvail-add-stock").attr("class", "btn btn-danger");
+        });
+
+        // Add-a-Stock-Section
+        $('#addbutton-add-stock').on('click', function () {
+            $(this).hide()
+            $("#checkAvail-add-stock").attr("class", "btn btn-danger");
+            middletext = ''
+            try {
+                middletext = "     <span style='font-size: x-small'>" + dataonStock.name + "</span>    <span style='font-size: x-small'>" + dataonStock.price + dataonStock.currency + "</span>"
+            } catch (e) {
+                middletext = ''
+            }
+
+            $("#stock-modal-list-add-stock").append("<li class='list-group-item' stockModalName=" + $('#inputticker-add-stock').val() + " data-checked='true'>" + $('#inputticker-add-stock').val() + middletext + "<button type='button' style=' position:absolute; top: 5px; bottom: 5px; right: 5;' name='remove-add-stock" + $('#stock-modal-list-add-stock').children().length + "' class='btn btn-danger'>Remove</button>" + "</li > ")
+            $('#inputticker-add-stock').val('')
+        });
+
+        $('#AddStock').on('click', 'button[name^="remove-add-stock"]', function () {
+            console.log('geklickt')
+            $(this).closest('li').remove()
+        });
+
+
+
+
+
+        $("#checkAvail-add-stock").click(function () {
+            var tickerwert = $('#inputticker-add-stock').val();
+            console.log(tickerwert)
+            if (tickerwert.length !== 0) {
+                $.post("{% url 'validate_ticker_symbol' %}",
+                    {
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                        tickersymbPost: tickerwert,
+                    },
+                );
+                // ansonsten gibt er noch die alten JSON-Daten zurück (die natürlich falsch sind)
+                setTimeout(callticker, 3000)
+
+                function callticker() {
+                    $.ajax({
+                        url: "{% url 'validate_ticker_symbol' %}",
+                        method: 'GET',
+                        success: function (data) {
+                            console.log(data)
+                            //is it really true?
+                            // es kommt manchmal zur Verzögerung beim laden! Daher überprüfen, ob richtiger Ticker ist!
+                            if (data.tickersymb == tickerwert) {
+                                if (data.exists == true) {
+                                    $("#checkAvail-add-stock").attr("class", "btn btn-success");
+                                    $('#addbutton-add-stock').show()
+                                    dataonStock = data
+                                } else {
+                                    if (confirm("Ticker doesn't seem to be working. Add anyways?")) {
+                                        console.log("AJAX ran, but ticker isn't okay")
+                                        $('#addbutton-add-stock').show()
+                                        dataonStock = null
+                                    }
+                                }
+                            } else (
+                                alert('Bitte nochmal laden!')
+                            )
+                        },
+                        error: function (textStatus, errorThrown) {
+                            if (confirm("Ticker seems to be working.")) {
+                                console.log("AJAX didn't run, and ticker isn't okay")
+                            }
+                        }
+                    })
+                }
+
+            } else {
+                alert('No Ticker entered!')
+            }
+        });
+    });
+</script>
+{% endblock javascript %}

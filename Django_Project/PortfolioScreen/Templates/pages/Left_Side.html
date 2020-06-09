@@ -1,3 +1,6 @@
+<style>
+
+</style>
 <div class="container" style=" border: 2px solid rgb(119, 139, 250); border-radius: 25px;">
 
     <nav class="nav nav-pills">
@@ -28,9 +31,40 @@
         </div>
         <div class="tab-pane" id="figures">
             <ul class="list-group list-group-horizontal">
-                <li class="list-group-item">Cras</li>
-                <li class="list-group-item">sds</li>
+                <!-- Wird nur angezeigt, wenn Portoflio ausgewählt ist-->
+                {% if Portfolioparam %}
+                {% if ordinary_figures %}
+                {% for thefigure in ordinary_figures %}
+                <li class="list-group-item">
+                    <button type="button" id="{{ thefigure.overallfigurename }}-button" class="btn btn-secondary"
+                        data-toggle="tooltip" data-html="true" title="{{thefigure.pythoncode|truncatechars:100 }}">
+                        {{ thefigure.overallfigurename }}
+                    </button>
+                </li>
+                {% endfor %}
+                {% else %}
+                <a href="{% url 'create_figures_from_scratch' Portfolioparam %}">No Figures created yet!
+                    Setup
+                    Default
+                    figures.</a>
+                {% endif %}
+                {% else %}
+                <b>Load Portfolio first</b>
+                {% endif %}
+                <!--  <li class="list-group-item">Cras</li>
+                <li class="list-group-item">sds</li> -->
             </ul>
         </div>
     </div>
 </div>
+<script>$(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+
+
+
+
+    });
+
+
+
+</script>

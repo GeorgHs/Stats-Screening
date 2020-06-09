@@ -1,45 +1,5 @@
 {% load static %}
 
-<!-- Kontextmenue -->
-<div class="custom-cm">
-    <div class="custom-cm__item">asdfasdf</div>
-    <div class="custom-cm__item">asdfasdf</div>
-    <div class="custom-cm__divider"></div>
-</div>
-
-<style>
-    /* Kontextmenü */
-
-    .custom-cm {
-        background-color: white;
-        border: 1px solid gray;
-        box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
-        display: none;
-        padding: 10px 0;
-        position: absolute;
-        z-index: 100;
-        top: 0;
-        left: 0;
-        width: 200px;
-    }
-
-    .custom-cm__item {
-        cursor: pointer;
-        padding: 8px 15px;
-    }
-
-    .custom-cm__item:hover {
-        background-color: #f8f8f8;
-    }
-
-    .custom-cm__divider {
-        border-bottom: 1px solid #eeeeee;
-        margin: 1px 0;
-    }
-</style>
-
-
-
 <div class="container">
 
 
@@ -57,7 +17,17 @@
                 <!-- Modal body -->
                 <div class="modal-body">
                     <div class="container">
-                        <div class="row">
+
+                        <div class="row" style="padding-bottom: 25px;">
+                            <div class="col">
+                                <h6>Portfolio Name</h6>
+                            </div>
+                            <div class="col">
+                                <input type="textfield" id="portfolioNameTextField" placeholder='Portfolio Name' />
+                            </div>
+                        </div>
+
+                        <div class=" row">
 
                             <div class="col">
                                 <input type="text" class="form-control" id="inputticker" aria-describedby="Ticker"
@@ -93,8 +63,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-
+                        <div class="row" style="padding-top: 25 px">
+                            {% if messages %}
+                            {% for message in messages %}
+                            <div class="alert alert-{{message.tags}}">
+                                {{message}}
+                            </div>
+                            {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -109,150 +85,149 @@
         </div>
 
     </div>
-    {% block javascript %}
-    <script>
-        // das Kontextmenue laden!
-        const cm = document.querySelector('.custom-cm');
+</div>
+{% block javascript %}
+<!-- All JavaScript Files -->
+<script>
+    // current loaded stock
+    var dataonStock;
 
-        function showContextMenu(show = true) {
-            cm.style.display = show ? 'block' : 'none'
-        }
-
-        window.addEventListener('contextmenu', (e) => {
-            console.log('right click!');
-        })
-
-        window.addEventListener('contextmenu', (e) => {
-            e.preventDefault()
-            if (!$('#NewPortfolio').hasClass('in')) {
-                showContextMenu()
-                console.log($('.modal').offset().top)
-                cm.style.top = e.y - document.getElementById("NewPortfolio").offsetTop;
-                cm.style.left = e.x - document.getElementById("NewPortfolio").offsetLeft;
-            }
-        })
-
-        window.addEventListener('click', () => {
-            showContextMenu(false);
-        })
+    /* jQuery-Kram */
+    $(document).ready(function loader() {
+        //alle Default-Einstellungen laden!
+        $('#addbutton').hide()
+        $("#checkAvail").attr("class", "btn btn-danger");
+        console.log('geladen')
 
 
-        $('#1context').click(function (e) {
-            alert("first one")
-        })
-        $('#2context').click(function (e) {
-            alert("second one")
-        })
-        $('#3context').click(function (e) {
-            alert("third one")
-        })
-        $('#4context').click(function (e) {
-            alert("fourth one")
-        })
 
-        // current loaded stock
-        var dataonStock;
-
-        /* jQuery-Kram */
-        $(document).ready(function loader() {
-            //alle Default-Einstellungen laden!
+        $('#NewPortfolio').on('hidden.bs.modal', function (e) {
             $('#addbutton').hide()
             $("#checkAvail").attr("class", "btn btn-danger");
-            console.log('geladen')
-
-
-
-            $('#NewPortfolio').on('hidden.bs.modal', function (e) {
-                $('#addbutton').hide()
-                $("#checkAvail").attr("class", "btn btn-danger");
-            });
-
-
-            $('.list-group-item').click(function (e) {
-                console.log($(this)[0].outerHTML)
-
-            })
-
-            // Add-a-Stock-Section
-            $('#addbutton').click(function () {
-                $(this).hide()
-                $("#checkAvail").attr("class", "btn btn-danger");
-                middletext = ''
-                try {
-                    middletext = "     <span style='font-size: x-small'>" + dataonStock.name + "</span>    <span style='font-size: x-small'>" + dataonStock.price + dataonStock.currency + "</span>"
-                } catch (e) {
-                    middletext = ''
-                }
-
-                $("#stock-modal-list-new-portfolio").append("<li class='list-group-item' stockModalName=" + $('#inputticker').val() + " data-checked='true'>" + $('#inputticker').val() + middletext + "<button type='button' style=' position:absolute; top: 5px; bottom: 5px; right: 5;' id=" + $('.list-group').children().length + " name='remove" + $('.list-group').children().length + "' class='btn btn-danger'>Remove</button>" + "</li > ")
-                $('#inputticker').val('')
-            })
-
-            $('#NewPortfolio').on('click', 'button[name^="remove"]', function () {
-                console.log('geklickt')
-                $(this).closest('li').remove()
-            })
-
-
-            // Portfolio erstellen:
-            $('#create-portfolio').on('click', function () {
-                alleStocks = $('#stock-modal-list-new-portfolio').children()
-                console.log(alleStocks)
-            })
-
         });
 
 
-        $("#checkAvail").click(function () {
-            var tickerwert = $('#inputticker').val();
-            console.log(tickerwert)
-            if (tickerwert.length !== 0) {
-                $.post("{% url 'validate_ticker_symbol' %}",
+        $('.list-group-item').click(function (e) {
+            console.log($(this)[0].outerHTML)
+
+        })
+
+        // Add-a-Stock-Section
+        $('#addbutton').click(function () {
+            $(this).hide()
+            $("#checkAvail").attr("class", "btn btn-danger");
+            middletext = ''
+            try {
+                middletext = "     <span style='font-size: x-small'>" + dataonStock.name + "</span>    <span style='font-size: x-small'>" + dataonStock.price + dataonStock.currency + "</span>"
+            } catch (e) {
+                middletext = ''
+            }
+
+            $("#stock-modal-list-new-portfolio").append("<li class='list-group-item' stockModalName=" + $('#inputticker').val() + " data-checked='true'>" + $('#inputticker').val() + middletext + "<button type='button' style=' position:absolute; top: 5px; bottom: 5px; right: 5;' id=" + $('.list-group').children().length + " name='remove" + $('.list-group').children().length + "' class='btn btn-danger'>Remove</button>" + "</li > ")
+            $('#inputticker').val('')
+        })
+
+        $('#NewPortfolio').on('click', 'button[name^="remove"]', function () {
+            console.log('geklickt')
+            $(this).closest('li').remove()
+        })
+
+
+        // Portfolio erstellen:
+        $('#create-portfolio').on('click', function () {
+            if ($('#portfolioNameTextField').val().length != 0) {
+
+                alleStocks = $('#stock-modal-list-new-portfolio').children()
+                stockListe = {}
+                figureListe = []
+                for (i = 1; i <= alleStocks.length; i++) {
+                    tickerausgabe = $('#stock-modal-list-new-portfolio li:nth-child(' + i + ')').attr('stockModalName')
+                    stockListe[i] = tickerausgabe
+                    figureausgabe = $('#figure-modal-list-new-portfolio li:nth-child(' + i + ')').attr('stockModalName')
+                    figureListe.push(figureausgabe)
+                }
+                // die feststehende Funktion sieht so aus: $.post("/post/url.php", parameters, successFunction);
+                // Du kannst aber auch folgendes nutzen: 
+                //$.ajax({
+                // url: "/post/url.php",
+                // type: "POST",
+                // data: parameters,
+                // success: successFunction,
+                // error: errorFunction
+                //});
+                $.post("{% url 'create_new_portfolio' %}",
                     {
                         csrfmiddlewaretoken: "{{ csrf_token }}",
-                        tickersymbPost: tickerwert,
+                        portfolionamepost: $('#portfolioNameTextField').val(),
+                        stocklistepost: stockListe,
                     },
-                );
-                // ansonsten gibt er noch die alten JSON-Daten zurück (die natürlich falsch sind)
-                setTimeout(callticker, 3000)
+                    function (data) {
+                        if (data.status == 1) { // meaning that everyhting went ok
+                            alert(data.message)
 
-                function callticker() {
-                    $.ajax({
-                        url: "{% url 'validate_ticker_symbol' %}",
-                        method: 'GET',
-                        success: function (data) {
-                            console.log(data)
-                            //is it really true?
-                            // es kommt manchmal zur Verzögerung beim laden! Daher überprüfen, ob richtiger Ticker ist!
-                            if (data.tickersymb == tickerwert) {
-                                if (data.exists == true) {
-                                    $("#checkAvail").attr("class", "btn btn-success");
-                                    $('#addbutton').show()
-                                    dataonStock = data
-                                } else {
-                                    if (confirm("Ticker doesn't seem to be working. Add anyways?")) {
-                                        console.log("AJAX ran, but ticker isn't okay")
-                                        $('#addbutton').show()
-                                        dataonStock = null
-                                    }
-                                }
-                            } else (
-                                alert('Bitte nochmal laden!')
-                            )
-                        },
-                        error: function (textStatus, errorThrown) {
-                            if (confirm("Ticker seems to be working.")) {
-                                console.log("AJAX didn't run, and ticker isn't okay")
-                            }
+                        } else {
+                            alert(data.message)
+                            window.location.pathname = data.redirecturl
+
                         }
-                    })
-                }
-
+                    }
+                );
             } else {
-                alert('No Ticker entered!')
+                alert('Check name of portfolio')
             }
-        });
+        })
 
-    </script>
-    <script src="{% static 'PortfolioScreen/newportfolio.js' %}"></script>
-    {% endblock javascript %}
+    });
+
+
+    $("#checkAvail").click(function () {
+        var tickerwert = $('#inputticker').val();
+        console.log(tickerwert)
+        if (tickerwert.length !== 0) {
+            $.post("{% url 'validate_ticker_symbol' %}",
+                {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    tickersymbPost: tickerwert,
+                },
+            );
+            // ansonsten gibt er noch die alten JSON-Daten zurück (die natürlich falsch sind)
+            setTimeout(callticker, 3000)
+
+            function callticker() {
+                $.ajax({
+                    url: "{% url 'validate_ticker_symbol' %}",
+                    method: 'GET',
+                    success: function (data) {
+                        console.log(data)
+                        //is it really true?
+                        // es kommt manchmal zur Verzögerung beim laden! Daher überprüfen, ob richtiger Ticker ist!
+                        if (data.tickersymb == tickerwert) {
+                            if (data.exists == true) {
+                                $("#checkAvail").attr("class", "btn btn-success");
+                                $('#addbutton').show()
+                                dataonStock = data
+                            } else {
+                                if (confirm("Ticker doesn't seem to be working. Add anyways?")) {
+                                    console.log("AJAX ran, but ticker isn't okay")
+                                    $('#addbutton').show()
+                                    dataonStock = null
+                                }
+                            }
+                        } else (
+                            alert('Bitte nochmal laden!')
+                        )
+                    },
+                    error: function (textStatus, errorThrown) {
+                        if (confirm("Ticker seems to be working.")) {
+                            console.log("AJAX didn't run, and ticker isn't okay")
+                        }
+                    }
+                })
+            }
+
+        } else {
+            alert('No Ticker entered!')
+        }
+    });
+</script>
+{% endblock javascript %}

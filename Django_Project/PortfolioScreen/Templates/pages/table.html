@@ -1,15 +1,16 @@
 <table>
     <tr>
-        <th>ISIN</th>
-        <th>Contact</th>
-        <th>Country</th>
+        <th>Symbol of Ticker</th>
+        <th>Full Name</th>
+        <th>Price</th>
+        <!-- Here come any more figures you have choosen! -->
     </tr>
 
 
 
     {% for stock in Stocks %}
     <tr>
-        <td>{{stock.ISIN}}</td>
+        <td>{{stock.Tickersymbol}}</td>
         <td>{{stock.ISIN}}</td>
     </tr>
     {% endfor %}
