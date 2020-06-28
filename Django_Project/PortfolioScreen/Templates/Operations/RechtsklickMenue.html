@@ -31,79 +31,170 @@
 
 
 <!-- Kontextmenue -->
+
+<div class="custom-cm" id="figure-header-context">
+    <div id="rc-hide-figure" class="custom-cm__item">Hide this Figure</div>
+</div>
+
 <div class="custom-cm" id="portfolio-context">
-    <div class="custom-cm__item">Delete Portfolio</div>
-    <div class="custom-cm__item">asdfasdf</div>
-    <div class="custom-cm__divider"></div>
+    <div id="rc-delete-portfolio" class="custom-cm__item">Delete Portfolio</div>
 </div>
 
 <div class="custom-cm" id="figures-context">
-    <div class="custom-cm__item">Add Figure</div>
-    <div class="custom-cm__item">Create New Figure</div>
-    <div class="custom-cm__divider"></div>
+    <div id="rc-add-figure" class="custom-cm__item">Add Figure</div>
+    <div id="rc-create-new-figure" class="custom-cm__item">Create New Figure</div>
+    <div id="" class="custom-cm__divider"></div>
 </div>
 
 <div class="custom-cm" id="table-context">
-    <div class="custom-cm__item">Refresh whole table</div>
-    <div class="custom-cm__item"></div>
+    <div id="rc-refresh-whole-table" class="custom-cm__item">Refresh whole table</div>
     <div class="custom-cm__divider"></div>
 </div>
 
+<div class="custom-cm" id="table-figures-context">
+    <div id="rc-refresh-row-of-figures" class="custom-cm__item">Refresh this row of figures</div>
+    <div class="custom-cm__divider"></div>
+</div>
+{% block javascript %}
 <script>
     // das Kontextmenue laden!
     const cmPC = document.getElementById('portfolio-context')
     const cmFC = document.getElementById('figures-context')
     const cmTC = document.getElementById('table-context')
+    const cmFHC = document.getElementById('figure-header-context')
+    const cmTFC = document.getElementById('table-figures-context')
+
+    const alle_context_menues = [cmPC, cmFC, cmTC, cmFHC, cmTFC]
+
+    temp_e_target = null
+    row_e_target = null
+    delete_e_target = null
 
     function showContextMenu(cmtype, show = true) {
         cmtype.style.display = show ? 'block' : 'none'
     }
 
 
-
+    // portfolio context menue
     $('#portfolios').contextmenu(function (e) {
         e.preventDefault()
         if (!$('#NewPortfolio').hasClass('in')) {
             showContextMenu(cmPC, true)
-            console.log(e)
+            // bitte nur innerhtml nehmen, keine id!
+            delete_e_target = e.target
             cmPC.style.top = e.clientY //- cmPC.offsetTop;
             cmPC.style.left = e.clientX //- cmPC.offsetLeft;
         }
     })
 
-    cmFC.addEventListener('contextmenu', (e) => {
+    // figures context menue
+    $('#figures').contextmenu(function (e) {
         e.preventDefault()
         if (!$('#NewPortfolio').hasClass('in')) {
             showContextMenu(cmFC, true)
-            cmFC.style.top = e.y - document.getElementById("figures-context").offsetTop;
-            cmFC.style.left = e.x - document.getElementById("figures-context").offsetLeft;
+            cmFC.style.top = e.clientY //- cmPC.offsetTop;
+            cmFC.style.left = e.clientX //- cmPC.offsetLeft;
         }
     })
 
-    cmTC.addEventListener('contextmenu', (e) => {
+    // figures context menue
+    $('#table-header').contextmenu(function (e) {
         e.preventDefault()
         if (!$('#NewPortfolio').hasClass('in')) {
-            showContextMenu(cmTC, true)
-            cmTC.style.top = e.y - document.getElementById("table-context").offsetTop;
-            cmTC.style.left = e.x - document.getElementById("table-context").offsetLeft;
+            showContextMenu(cmFHC, true)
+            temp_e_target = e.target
+            cmFHC.style.top = e.clientY //- cmPC.offsetTop;
+            cmFHC.style.left = e.clientX //- cmPC.offsetLeft;
         }
     })
 
+    // figures context menue
+    $('.table-figures').contextmenu(function (e) {
+        e.preventDefault()
+        if (!$('#NewPortfolio').hasClass('in')) {
+            showContextMenu(cmTFC, true)
+            row_e_target = '#' + e.target.parentElement.id
+            //console.log(e.target.parentElement.firstElementChild.innerHTML)
+            cmTFC.style.top = e.clientY //- cmPC.offsetTop;
+            cmTFC.style.left = e.clientX //- cmPC.offsetLeft;
+        }
+    })
+
+
     window.addEventListener('click', (e) => {
-        showContextMenu(document.querySelector('.custom-cm'), false);
+        alle_context_menues.forEach(function (menue) {
+            showContextMenu(menue, false);
+        })
     })
 
 
-    $('#1context').click(function (e) {
-        alert("first one")
+    $('#rc-hide-figure').click(function (e) {
+
+
+        figure_id = temp_e_target.innerHTML
+
+        $(('.header_' + figure_id).replace(' ', '.')).fadeOut("slow")
+        selector = "td." + 'tb_' + figure_id
+        selector = selector.replace(' ', '.')
+        console.log(selector)
+        $(selector).each(function (index, element) {
+            element.remove()
+        });
+
+        //jetzt aus Datenbank entfernen:
+        console.log(figure_id)
+
+
+        // Stück für Stück ersetzen: anders geht es nicht
+        post_url = "{% url 'hide_figure_column' 'tempid' 'Portfolioparam'  %}".replace("tempid", figure_id)
+        post_url = post_url.replace('Portfolioparam', "{{Portfolioparam}}")
+
+
+        $.post(post_url, {
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            status: 'removed',
+        },
+            function (data) {
+                console.log(data)
+            },
+        )
+
     })
-    $('#2context').click(function (e) {
-        alert("second one")
+
+
+    $('#rc-delete-portfolio').click(function (e) {
+
+        if (confirm('Deleting Portfolio?')) {
+            console.log(delete_e_target.innerHTML)
+            console.log(delete_e_target.parentElement)
+            $(delete_e_target.parentElement).remove()
+
+
+            $.post("{% url 'delete_portfolio' %}", {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                status: 'removed',
+                portfolio: delete_e_target.innerHTML,
+            },
+                function (data) {
+                    //nur neuladen, wenn selbes Portfolio
+                    if ('{{Portfolioparam}}' === delete_e_target.innerHTML) {
+                        console.log(delete_e_target.innerHTML)
+                        console.log('{{Portfolioparam}}')
+                        window.location.pathname = data.redirecturl
+                    }
+                    delete_e_target = null
+                },
+            )
+        }
     })
-    $('#3context').click(function (e) {
+    $('#rc-add-figure').click(function (e) {
         alert("third one")
     })
-    $('#4context').click(function (e) {
+    $('#rc-create-new-figure').click(function (e) {
         alert("fourth one")
     })
+    $('#rc-refresh-row-of-figures').click(function (e) {
+        $(row_e_target).replaceWith('<tr id="{{stock.tickersymbol}}-tkr" class="table-figures"><td>{{Stocks.0.tickersymbol}}</td><td>asdf</td><td>asdf</td><td>asdf</td><td>asdf</td><td>asdf</td></tr>')
+    })
 </script>
+{% endblock javascript %}

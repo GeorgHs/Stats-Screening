@@ -1,8 +1,10 @@
-Portfolio-Name: {{Portfolioparam}}<br>
+Portfolio-Name: <span id="portfolioparam_span">{{Portfolioparam}}</span><br>
 UserSpec: {{UserSpec}}<br>
 {{UserSpec.id}}<br>
 {{UserSpec.first_name}}<br>
 {{UserSpec.last_name}}<br>
 {{UserSpec.email}}<br>
 <hr>
-hier kommen die Zahlen hin
+{% for thefigure in PortfolioFigures %}
+{{thefigure.overallfigure}} : {{thefigure.figureValue}}<br>
+{% endfor %}

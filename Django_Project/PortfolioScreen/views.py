@@ -6,11 +6,13 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.template import context
 from django.http.response import JsonResponse
+from .temp_vars import portfolioStatic
 
 
 import yfinance as yf
 import time
 from django.urls import reverse
+from PortfolioScreen.models import PortfolioFigureHeader
 
 
 @login_required
@@ -18,6 +20,7 @@ def PortfolioScreen(request):
     context = {
         'Users': request.user,
         'Portfolios': Portfolio.objects.filter(fundmanager__exact=request.user),
+        'OverallFigures': OverallFigure.objects.all(),
     }
     return render(request, 'PortfolioScreen/main.html', context)
 
@@ -33,24 +36,126 @@ def datadisplay(request, portfolio):
         # request.user.objects(),
         'ordinary_figures': OverallFigure.objects.all(),
         'PortfolioObject': Portfolio.objects.get(portfolioname__exact=portfolio),
+        'portfolio_header': load_header(portfolio),
         'Stocks': Portfolio.objects.get(portfolioname__exact=portfolio).stock.all(),
         'title': "Portfolio Table",
-        'PortfolioFigures': Portfolio.objects.filter(),
+        'PortfolioFigures': Portfolio.objects.get(portfolioname__exact=portfolio).portfolio_figure.all(),
         # nur für diesen Benutzer genutzte Portfolios auswählen! (oben in POrtfolioScreen)
         # aus den Portfolios die einzelnen Aktien auswählen!
         # die zugehörigen Portfolio-Kennzahlen
     }
+    portfolioStatic.portfolioname = portfolio
     print(Portfolio.objects.get(portfolioname__exact=portfolio).stock.all())
     return render(request, 'PortfolioScreen/datadisplay.html', context)
+
+
+def load_header(_portfolio):
+    header = None
+    try:
+        header = PortfolioFigureHeader.objects.filter(
+            portfolio__portfolioname=_portfolio).get()
+    except Exception:
+        print("Couldn't load PortfolioFigureHeader "+_portfolio)
+    return header
+
+
+@login_required
+def exportCSV(request):
+    pass
+
+
+@login_required
+def exportExcel(request):
+    pass
+
+
+@login_required
+def exportPDF(request):
+    pass
+
+
+@login_required
+def hide_figure_column(request, figureid, portfolio):
+    data = {'': ''}
+    try:
+        portfolioContainingFigure = PortfolioFigureHeader.objects.filter(
+            portfolio__portfolioname=portfolio).get()
+        figureToBeDeleted = OverallFigure.objects.filter(name=figureid).get()
+        portfolioContainingFigure.figures.remove(figureToBeDeleted)
+        data['status'] = '1'
+        data['message'] = "removed"
+        data['redirecturl'] = str("table/"+portfolio),
+        print(portfolioContainingFigure.figures.all())
+    except Exception:
+        data['status'] = '0'
+        data['message'] = 'This figure is non-existent: ' + figureid
+        print(data['message'])
+    return JsonResponse(data)
+
+
+@login_required
+def delete_portfolio(request):
+    data = {'': ''}
+    portfolioparam = request.POST.get('portfolio')
+    print(portfolioparam)
+    try:
+        data['status'] = 0
+        data['msg'] = 'Everything went well'
+        data['redirecturl'] = ''
+        Portfolio.objects.filter(portfolioname=portfolioparam).delete()
+    except Exception:
+        data['status'] = 1
+        data['msg'] = 'Failed to remove ' + portfolioparam
+    return JsonResponse(data)
+
+
+@login_required
+def add_figure_to_column(request):
+    data = {'': ''}
+    container = request.POST.get('whereid')
+    figurename = request.POST.get('figurename')
+    print('container ', container)
+    print('figurename', figurename)
+    thefigure = OverallFigure.objects.filter(name=figurename).get()
+    if (container == 'tableregion'):
+        try:
+            HinzuzufuegenderHeader = PortfolioFigureHeader.objects.filter(
+                portfolio__portfolioname=portfolioStatic.portfolioname).get()
+            figureToBeDeleted = OverallFigure.objects.filter(
+                name=figurename).get()
+            HinzuzufuegenderHeader.figures.add(figureToBeDeleted)
+
+            data['status'] = 0
+            data['code'] = thefigure.pythoncode
+        except Exception:
+            data['status'] = 1
+            data['code'] = ''
+    elif container == 'portfolio-region':
+        # try:
+        _figure = OverallFigure.objects.filter(name=figurename).get()
+        pffigure = PortfolioFigure(
+            overallfigure=_figure, figureValue='1.0')
+        pffigure.save()
+        print(portfolioStatic.portfolioname)
+        Portfolio.objects.get(
+            portfolioname__exact=portfolioStatic.portfolioname).portfolio_figure.add(pffigure)
+
+        data['status'] = 0
+        data['code'] = thefigure.pythoncode
+        # except Exception:
+        #    data['status'] = 1
+        #    data['code'] = 'failed'
+    return JsonResponse(data)
 
 
 @login_required
 def create_new_portfolio(request):
     if request.method == "POST":
+
         stockliste = request.POST.dict()
         _portfolioname = request.POST.get('portfolionamepost')
         print(stockliste)
-        # komplizierte Konvertierungen um an die Werte im dict zu kommen - Verbesserungen willkommen!
+        # komplizierte Konvert2ierungen um an die Werte im dict zu kommen - Verbesserungen willkommen!
         l = []
         [l.extend([v]) for v in stockliste.items()]
 
@@ -58,14 +163,30 @@ def create_new_portfolio(request):
 
         # portfolio erstellen:
         if len(Portfolio.objects.filter(portfolioname__exact=_portfolioname)) == 0:
-            portfolio = Portfolio(
+            _portfolio = Portfolio(
                 portfolioname=_portfolioname, fundmanager=request.user)
-            portfolio.save()
+            _portfolio.save()
+            alphaof = OverallFigure.objects.filter(name='Alpha').get()
+            betaof = OverallFigure.objects.filter(name='Beta').get()
+            dailyreturnof = OverallFigure.objects.filter(
+                name='Daily Returns').get()
+
+            print('portfolioname: ', _portfolio)
+            header = PortfolioFigureHeader(portfolio=_portfolio)
+            header.save()
+            print('hat auch noch geklappt')
+            header.figures.add(alphaof)
+            print('hat nicht mehr geklappt')
+            header.figures.add(betaof)
+            header.figures.add(dailyreturnof)
+            header.save()
+
+            print(header)
             # stocks erstellen
             for x in range(2, len(l)):  # ersten 2 sind token und portfolioname
                 # erstelle Stock
-                portfolio.stock.create(Tickersymbol=str(l[x][1]))
-            portfolio.save()
+                _portfolio.stock.create(tickersymbol=str(l[x][1]))
+            _portfolio.save()
             # in Warteschleife, bis in Datenbank erstellt!
             while len(Portfolio.objects.filter(portfolioname__exact=_portfolioname)) == 0:
                 time.sleep(1)
@@ -80,7 +201,7 @@ def create_new_portfolio(request):
             data = {
                 'status': 0,  # ist Erfolg
                 'message': 'everything went alright',
-                'redirecturl': 'table/'+_portfolioname,
+                'redirecturl': str("table/"+_portfolioname),
             }
             return JsonResponse(data)
         else:
@@ -94,10 +215,9 @@ def create_new_portfolio(request):
             return JsonResponse(data)
 
 
-@login_required
-def create_figures_from_scratch(request, portfolio):
+def create_figures():
     OverallFigure.objects.bulk_create([
-        OverallFigure(overallfigurename="Beta", pythoncode="import pandas as pd \n"
+        OverallFigure(name="Beta", pythoncode="import pandas as pd \n"
                       "import numpy as np \n"
                       "import matplotlib.pyplot as plt \n"
                       "import pandas_datareader as web \n"
@@ -121,11 +241,21 @@ def create_figures_from_scratch(request, portfolio):
                       "print('The portfolio beta is', round(beta, 4)) \n"
                       ),
 
-        OverallFigure(overallfigurename="Alpha", pythoncode=""),
-        OverallFigure(overallfigurename="Daily Returns", pythoncode=""),
+        OverallFigure(name="Alpha", pythoncode=""),
+        OverallFigure(name="Daily Returns", pythoncode=""),
     ])
 
-    return redirect('datadisplay-pass', portfolio)
+
+@login_required
+def create_figures_from_scratch(request, _portfolio):
+    create_figures()
+    # nur redirecten, wenn auch Argument vorhanden ist
+    return redirect('datadisplay-pass', _portfolio)
+
+
+def create_figures_from_scratch_no_portfolio(request):
+    create_figures()
+    return redirect('portfolio-table')
 
 
 @login_required

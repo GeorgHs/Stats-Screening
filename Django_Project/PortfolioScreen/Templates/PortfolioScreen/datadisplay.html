@@ -3,23 +3,21 @@
 <div class="container">
     <div class="row sticky-top">
         <ul class="nav nav-pills">
-
             <a class="nav-link active" data-toggle="tab" href="#table">Tabelle</a>
             <a class="nav-link" data-toggle="tab" href="#chart">Charts</a>
             <a class="nav-link" data-toggle="tab" href="#settings">Settings</a>
             <a class="nav-link disabled" href="#">Disabled</a>
-
         </ul>
     </div>
     <div class="row">
-        <div class="col">
-            <div class="tab-content py-3">
+        <div class="col figure-drop-area" id="tableregion">
+            <div class="tab-content py-3" id="tableregionsub">
                 <div class="tab-pane active" id="table">{% include "../pages/table.html"%}</div>
                 <div class="tab-pane" id="chart">{% include "../pages/chart.html"%}</div>
                 <div class="tab-pane" id="settings">{% include "../pages/settings.html"%}</div>
             </div>
         </div>
-        <div class="col">
+        <div class="col figure-drop-area" id="portfolio-region">
             {% include "../pages/Right_Side.html" %}
         </div>
     </div>

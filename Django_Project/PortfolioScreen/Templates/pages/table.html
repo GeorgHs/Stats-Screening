@@ -1,19 +1,48 @@
+{% load templates_func %}
+
 <table>
-    <tr>
+    <tr id="table-header">
         <th>Symbol of Ticker</th>
         <th>Full Name</th>
         <th>Price</th>
+
         <!-- Here come any more figures you have choosen! -->
+        {% for thefigure in ordinary_figures %}
+
+        {% if thefigure|in_list:portfolio_header.figure_list %}
+        <th class="header_{{thefigure.name}}">{{thefigure.name}}</th>
+        {% endif %}
+
+        {% endfor %}
     </tr>
 
 
 
     {% for stock in Stocks %}
-    <tr>
-        <td>{{stock.Tickersymbol}}</td>
-        <td>{{stock.ISIN}}</td>
+    <tr id="{{stock.tickersymbol}}_tkr" class="table-figures">
+        <td class="tb_tickersymbol">{{stock.tickersymbol}}</td>
+        <td class="tb_ISIN">{{stock.ISIN}}</td>
+        <td class="tb_length">{{ordinary_figures|length}}</td>
+
+
+
+        {% for key,value in stock.get_all_stock_figures_right_order.items %}
+
+        {% if portfolio_header != None %}
+        {% if key|in_list:portfolio_header.figure_list %}
+        <td class="tb_{{key}}">{{value}}</td>
+        {% endif %}
+
+        {% else %}
+        <td class="tb_{{key}}">{{value}}</td>
+        {% endif %}
+
+        {% endfor %}
+
     </tr>
     {% endfor %}
+
+
 
 </table>
 

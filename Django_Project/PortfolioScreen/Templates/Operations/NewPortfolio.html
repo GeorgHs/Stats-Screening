@@ -162,13 +162,12 @@
                         stocklistepost: stockListe,
                     },
                     function (data) {
-                        if (data.status == 1) { // meaning that everyhting went ok
+                        if (data.status == 1) { // 1 ist Misserfolg
                             alert(data.message)
 
                         } else {
                             alert(data.message)
                             window.location.pathname = data.redirecturl
-
                         }
                     }
                 );

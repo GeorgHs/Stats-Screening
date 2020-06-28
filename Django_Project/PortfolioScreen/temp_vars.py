@@ -1,0 +1,2 @@
+class portfolioStatic:
+    portfolioname = ''

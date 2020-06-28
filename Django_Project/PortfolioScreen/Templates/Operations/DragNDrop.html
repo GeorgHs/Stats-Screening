@@ -1,0 +1,64 @@
+<script>
+
+    const list_items = document.querySelectorAll('.figure-item');
+    const lists = document.querySelectorAll('.figure-drop-area');
+
+    let draggedItem = null;
+    let droparea = '';
+    for (let i = 0; i < list_items.length; i++) {
+        const item = list_items[i];
+
+        item.addEventListener('dragstart', function (ev) {
+            console.log('dragstart')
+            // hier bitte nur kopieren!
+            draggedItem = this.cloneNode(true)
+            /*setTimeout(() => {
+                 item.style.display = 'block';
+             }, 0);*/
+        })
+
+        item.addEventListener('dragend', function (e) {
+            setTimeout(() => {
+                draggedItem.style.display = 'block';
+                draggedItem = null;
+            }, 0);
+            $.post("{% url 'add_figure_to_column' %}", {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                whereid: droparea,
+                figurename: draggedItem.id,
+            },
+                function (data) {
+                    window.location.pathname = 'table/{{Portfolioparam}}'
+                },
+            )
+        })
+
+        for (let j = 0; j < lists.length; j++) {
+            const list = lists[j];
+
+            list.addEventListener('dragover', function (e) {
+                e.preventDefault();
+            })
+            list.addEventListener('dragenter', function (e) {
+                e.preventDefault();
+                this.style.backgroundColor = 'rgba(0,0,0,0.2)';
+            })
+            list.addEventListener('dragleave', function (e) {
+                e.preventDefault(e)
+                this.style.backgroundColor = '#fafafa';
+            })
+            list.addEventListener('drop', function (e) {
+                droparea = e.target.className
+                currentselected = e.target
+                // es könnte auf irgend ein td oder tr oder table-element gedropped werden! Dann wollen wir natürlich die Tabelle
+                // deshalb so lange suchen, bis die Tabelle gefunden wurde (mit der Klasse figure-drop-area)
+                while (!currentselected.classList.contains('figure-drop-area')) {
+                    currentselected = currentselected.parentElement
+                }
+                droparea = currentselected.id
+                console.log('droparea ' + currentselected.id);
+                this.style.backgroundColor = '#fafafa';
+            })
+        }
+    }
+</script>
