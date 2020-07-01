@@ -35,6 +35,9 @@
 <div class="custom-cm" id="figure-header-context">
     <div id="rc-hide-figure" class="custom-cm__item">Hide this Figure</div>
 </div>
+<div class="custom-cm" id="figure-portfolio-context">
+    <div id="rc-hide-portfolio-figure" class="custom-cm__item">Delete this Figure</div>
+</div>
 
 <div class="custom-cm" id="portfolio-context">
     <div id="rc-delete-portfolio" class="custom-cm__item">Delete Portfolio</div>
@@ -63,12 +66,14 @@
     const cmTC = document.getElementById('table-context')
     const cmFHC = document.getElementById('figure-header-context')
     const cmTFC = document.getElementById('table-figures-context')
+    const cmFPC = document.getElementById('figure-portfolio-context')
 
-    const alle_context_menues = [cmPC, cmFC, cmTC, cmFHC, cmTFC]
+    const alle_context_menues = [cmPC, cmFC, cmTC, cmFHC, cmTFC, cmFPC]
 
     temp_e_target = null
     row_e_target = null
     delete_e_target = null
+    figure_e_target = null
 
     function showContextMenu(cmtype, show = true) {
         cmtype.style.display = show ? 'block' : 'none'
@@ -119,7 +124,16 @@
             cmTFC.style.left = e.clientX //- cmPC.offsetLeft;
         }
     })
-
+    $('tr[class^="portfolio_figure_"]').contextmenu(function (e) {
+        e.preventDefault()
+        showContextMenu(cmFPC, true)
+        figure_e_target = e.target
+        while (!figure_e_target.classList.contains('figure_row')) {
+            figure_e_target = figure_e_target.parentElement
+        }
+        cmFPC.style.top = e.clientY //- cmPC.offsetTop;
+        cmFPC.style.left = e.clientX //- cmPC.offsetLeft;
+    })
 
     window.addEventListener('click', (e) => {
         alle_context_menues.forEach(function (menue) {
@@ -195,6 +209,23 @@
     })
     $('#rc-refresh-row-of-figures').click(function (e) {
         $(row_e_target).replaceWith('<tr id="{{stock.tickersymbol}}-tkr" class="table-figures"><td>{{Stocks.0.tickersymbol}}</td><td>asdf</td><td>asdf</td><td>asdf</td><td>asdf</td><td>asdf</td></tr>')
+    })
+    $('#rc-hide-portfolio-figure').click(function (e) {
+        _figure_id = figure_e_target.classList[0].replace('portfolio_figure_', '')
+        console.log(_figure_id)
+        console.log(figure_e_target)
+        $(figure_e_target).fadeOut("slow")
+        $.post("{% url 'remove_portfolio_figure' %}", {
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            figureid: _figure_id,
+            portfolioid: '{{Portfolioparam}}',
+        },
+            function (data) {
+                console.log(data)
+            },
+        )
+        //
+        //Entfernen aus Datenbank
     })
 </script>
 {% endblock javascript %}

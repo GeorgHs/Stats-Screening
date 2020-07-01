@@ -4,7 +4,7 @@
 </style>
 
 <div class="modal" id="AddFigure">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Add New Figure</h4>
@@ -13,22 +13,17 @@
             <!-- Modal body -->
             <div class="modal-body">
                 <div class="container">
-                    <div class="row" style="padding-bottom: 25px;">
-                        <div class="col">
-
-                        </div>
-                        <div class="col">
-
+                    <div class="row">
+                        <div class="col" style="margin: 20px">
+                            <input type="text" class="form-control" id="inputticker_add_figure"
+                                aria-describedby="Ticker" placeholder="Figurename">
+                            <textarea class="form-control rounded-3" id="pythoncodetxb" rows="10"
+                                placeholder='Pythoncode, Use variable histprices for historical prices for that stock'></textarea>
                         </div>
                     </div>
-                    <div class="row" style="padding-top: 25px;">
+                    <div class="row">
                         <div class="col-lg">
-                            <p style="text-align:center;">Figures</p>
-                            <div class="well" style="max-height: 300px;overflow: auto;">
-                                <ul class="list-group checked-list-box" id="figure-modal-list-add-figure">
 
-                                </ul>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -36,8 +31,7 @@
             <!-- Modal footer -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Abort</button>
-                <button id="add-figure-button" type="button" class="btn btn-primary">Add Figure to current
-                    Portfolio</button>
+                <button id="add-add-figure" type="button" class="btn btn-primary">Add Figure</button>
             </div>
         </div>
     </div>
@@ -45,88 +39,28 @@
 {% block javascript %}
 <script>
     $(document).ready(function loader() {
-        $('#addbutton-add-figure').hide()
-        $("#checkAvail-add-figure").attr("class", "btn btn-danger");
 
-
-
-        $('#AddFigure').on('hidden.bs.modal', function (e) {
-            $('#addbutton-add-figure').hide()
-            $("#checkAvail-add-figure").attr("class", "btn btn-danger");
-        });
-
-        // Add-a-Stock-Section
-        $('#addbutton-add-figure').click(function () {
-            $(this).hide()
-            $("#checkAvail-add-figure").attr("class", "btn btn-danger");
-            middletext = ''
-            try {
-                middletext = "     <span style='font-size: x-small'>" + dataonStock.name + "</span>    <span style='font-size: x-small'>" + dataonStock.price + dataonStock.currency + "</span>"
-            } catch (e) {
-                middletext = ''
-            }
-
-            $("#figure-modal-list-add-figure").append("<li class='list-group-item' stockModalName=" + $('#inputticker-add-figure').val() + " data-checked='true'>" + $('#inputticker-add-figure').val() + middletext + "<button type='button' style=' position:absolute; top: 5px; bottom: 5px; right: 5;' name='remove-add-figure" + $('#figure-modal-list-add-figure').children().length + "' class='btn btn-danger'>Remove</button>" + "</li > ")
-            $('#inputticker-add-figure').val('')
-        });
-
-        $('#AddFigure').on('click', 'button[name^="remove"]', function () {
-            console.log('geklickt')
-            $(this).closest('li').remove()
-        });
-
-
-
-    });
-
-    $("#checkAvail-add-figure").click(function () {
-        var tickerwert = $('#inputticker-add-figure').val();
-        console.log(tickerwert)
-        if (tickerwert.length !== 0) {
-            $.post("{% url 'validate_ticker_symbol' %}",
+        $('#add-add-figure').on('click', function () {
+            // hier post-request an Server senden:
+            $.post("{% url 'add_overall_figure' %}",
                 {
                     csrfmiddlewaretoken: "{{ csrf_token }}",
-                    tickersymbPost: tickerwert,
+                    figurename: $('#inputticker_add_figure').val(),
+                    pythoncode: $('#pythoncodetxb').val(),
                 },
-            );
-            // ansonsten gibt er noch die alten JSON-Daten zurück (die natürlich falsch sind)
-            setTimeout(callticker, 3000)
+                function (data) {
+                    if (data.status == 1) {
+                        //Fehler in diesem Fall
+                        alert(data.message)
+                    } else {
 
-            function callticker() {
-                $.ajax({
-                    url: "{% url 'validate_ticker_symbol' %}",
-                    method: 'GET',
-                    success: function (data) {
-                        console.log(data)
-                        //is it really true?
-                        // es kommt manchmal zur Verzögerung beim laden! Daher überprüfen, ob richtiger Ticker ist!
-                        if (data.tickersymb == tickerwert) {
-                            if (data.exists == true) {
-                                $("#checkAvail-add-figure").attr("class", "btn btn-success");
-                                $('#addbutton-add-figure').show()
-                                dataonStock = data
-                            } else {
-                                if (confirm("Ticker doesn't seem to be working. Add anyways?")) {
-                                    console.log("AJAX ran, but ticker isn't okay")
-                                    $('#addbutton-add-figure').show()
-                                    dataonStock = null
-                                }
-                            }
-                        } else (
-                            alert('Bitte nochmal laden!')
-                        )
-                    },
-                    error: function (textStatus, errorThrown) {
-                        if (confirm("Ticker seems to be working.")) {
-                            console.log("AJAX didn't run, and ticker isn't okay")
-                        }
+
                     }
-                })
-            }
+                }
+            );
+        })
 
-        } else {
-            alert('No Ticker entered!')
-        }
+
     });
 </script>
 {% endblock javascript %}

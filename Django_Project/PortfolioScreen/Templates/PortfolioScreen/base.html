@@ -32,37 +32,34 @@
 
 
     <header class="site-header">
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <nav class="navbar navbar-expand-md navbar-light fixed-top" style="background-color: #e3f2fd;">
             <div class="container">
                 <a class="navbar-brand mr-4" href="/">Corporate icon</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
-                    aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
                 <div class="collapse navbar-collapse" id="navbarToggle">
-                    <div class="navbar-nav mr-auto">
-                        <a class="nav-item nav-link" data-toggle="modal" data-target="#NewPortfolio" href="#">New
-                            Portfolio</a>
-                        <a class="nav-item nav-link" data-toggle="modal" data-target="#AddStock" href="#">Add
-                            Stock</a>
-                        <a class="nav-item nav-link" data-toggle="modal" data-target="#AddFigure" href="#">Add
-                            Figure</a>
-                        <a class="nav-item nav-link" href="/">Screening Portfolio</a>
-                        <a class="nav-item nav-link" href="/about">About</a>
+                    <div class="row justify-content-md-center">
+                        <div class="col">
+                            <a type="button" class="btn btn-outline-info" href="/">Screening Portfolio</a>
+                            <a type="button" class="btn btn-outline-info" href="/about">About</a>
+                        </div>
                     </div>
-                    <!-- Navbar Right Side -->
-                    <div class="navbar-nav">
-                        {% if user.is_authenticated %}
-                        <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
-                        <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+                </div>
+                <!-- Navbar Right Side -->
+                <div class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <div class="row justify-content-md-center">
+                        <div class="col">
+                            <a class="btn btn-outline-primary" href="{% url 'profile' %}" role="button">Profile</a>
+                            <a class="btn btn-outline-danger" href="{% url 'logout' %}" role="button">Logout</a>
+                        </div>
                         {% else %}
-                        <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-                        <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+                        <div class="col">
+                            <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+                            <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
+                        </div>
                         {% endif %}
 
                     </div>
                 </div>
-            </div>
         </nav>
     </header>
 
@@ -74,10 +71,44 @@
 
         <div class="row">
             <div class="col-md-3">
-                {% include "../pages/Left_Side.html" %}
+                <div class="row" style="padding:20px">
+                    <div class="col">
+                        <a class="btn btn-success" data-toggle="modal" data-target="#NewPortfolio" href="#"
+                            role="button">New
+                            Portfolio</a>
+                        <a class="btn btn-success" data-toggle="modal" data-target="#AddFigure" href="#"
+                            role="button">Add Figure</a>
+                    </div>
+                </div>
+                <div class="row">
+                    {% include "../pages/Left_Side.html" %}
+                </div>
             </div>
             <div class="col auto">
-                {% block content %}{% endblock %}
+                <div class="row" style="padding:20px">
+                    <div class="col">
+                        <a class="btn btn-success" data-toggle="modal" data-target="#AddStock" href="#"
+                            role="button">Add
+                            Stock</a>
+                    </div>
+                    <div class="col">
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                                Export
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/ExportCsv/">CSV</a>
+                                <a class="dropdown-item" href="/ExportExcel/">Excel</a>
+                                <a class="dropdown-item" href="/ExportPDF/">PDF</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    {% block content %}{% endblock %}
+                </div>
             </div>
         </div>
 

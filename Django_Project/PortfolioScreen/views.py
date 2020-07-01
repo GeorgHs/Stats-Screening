@@ -1,3 +1,11 @@
+import csv
+import io
+from reportlab.pdfgen import canvas
+from django.http import FileResponse
+from datetime import datetime
+from datetime import timedelta
+from openpyxl import Workbook
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, request
 from .models import Stock, Portfolio, PortfolioFigure, Chart, StockFigure, OverallFigure
@@ -6,13 +14,15 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.template import context
 from django.http.response import JsonResponse
-from .temp_vars import portfolioStatic
+from .temp_vars import portfolioStatic, stockStatic
+import xlsxwriter
 
 
 import yfinance as yf
 import time
 from django.urls import reverse
 from PortfolioScreen.models import PortfolioFigureHeader
+from io import StringIO
 
 
 @login_required
@@ -61,17 +71,71 @@ def load_header(_portfolio):
 
 @login_required
 def exportCSV(request):
-    pass
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
+    writer.writerow(['Second row', 'A', 'B', 'C',
+                     '"Testing"', "Here's a quote"])
+
+    return response
+
+
+@login_required
+def add_overall_figure(request):
+    data = {'': ''}
+    _figurename = request.POST.get('figurename')
+    _pythoncode = request.POST.get('pythoncode')
+    print(_figurename, '  ', _pythoncode)
+    try:
+        ovf = OverallFigure(name=_figurename, pythoncode=_pythoncode)
+        ovf.save()
+        data['status'] = 0
+        data['msg'] = _figurename + ' was added'
+    except Exception:
+        data['status'] = 1
+        data['msg'] = _figurename + ' could not be added'
+
+    return JsonResponse(data)
 
 
 @login_required
 def exportExcel(request):
-    pass
+    output = StringIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet()
+    worksheet.write('A1', 'Some Data')
+    workbook.close()
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment;filename="some_file_name.xlsx"'
+
+    response.write(output.getvalue())
+
+    return response
 
 
 @login_required
 def exportPDF(request):
-    pass
+    # Create a file-like buffer to receive PDF data.
+    buffer = io.BytesIO()
+
+    # Create the PDF object, using the buffer as its "file."
+    p = canvas.Canvas(buffer)
+
+    # Draw things on the PDF. Here's where the PDF generation happens.
+    # See the ReportLab documentation for the full list of functionality.
+    p.drawString(100, 100, "Hello world.")
+
+    # Close the PDF object cleanly, and we're done.
+    p.showPage()
+    p.save()
+
+    # FileResponse sets the Content-Disposition header so that browsers
+    # present the option to save the file.
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
 
 
 @login_required
@@ -90,6 +154,21 @@ def hide_figure_column(request, figureid, portfolio):
         data['status'] = '0'
         data['message'] = 'This figure is non-existent: ' + figureid
         print(data['message'])
+    return JsonResponse(data)
+
+
+@login_required
+def remove_portfolio_figure(request):
+    data = {'': ''}
+    try:
+        tobedeleted_list = Portfolio.objects.get(portfolioname__exact=request.POST.get(
+            'portfolioid')).portfolio_figure.filter(overallfigure__name__startswith=request.POST.get('figureid')).all()
+        [v.delete() for v in tobedeleted_list]
+        data['status'] = 0
+        data['msg'] = 'Wurde gelöscht'
+    except Exception:
+        data['status'] = 1
+        data['msg'] = "Konnte nicht gefunden werden"
     return JsonResponse(data)
 
 
@@ -131,20 +210,20 @@ def add_figure_to_column(request):
             data['status'] = 1
             data['code'] = ''
     elif container == 'portfolio-region':
-        # try:
-        _figure = OverallFigure.objects.filter(name=figurename).get()
-        pffigure = PortfolioFigure(
-            overallfigure=_figure, figureValue='1.0')
-        pffigure.save()
-        print(portfolioStatic.portfolioname)
-        Portfolio.objects.get(
-            portfolioname__exact=portfolioStatic.portfolioname).portfolio_figure.add(pffigure)
+        try:
+            _figure = OverallFigure.objects.filter(name=figurename).get()
+            pffigure = PortfolioFigure(
+                overallfigure=_figure, figureValue='1.0')
+            pffigure.save()
+            print(portfolioStatic.portfolioname)
+            Portfolio.objects.get(
+                portfolioname__exact=portfolioStatic.portfolioname).portfolio_figure.add(pffigure)
 
-        data['status'] = 0
-        data['code'] = thefigure.pythoncode
-        # except Exception:
-        #    data['status'] = 1
-        #    data['code'] = 'failed'
+            data['status'] = 0
+            data['code'] = thefigure.pythoncode
+        except Exception:
+            data['status'] = 1
+            data['code'] = 'failed'
     return JsonResponse(data)
 
 
@@ -174,9 +253,7 @@ def create_new_portfolio(request):
             print('portfolioname: ', _portfolio)
             header = PortfolioFigureHeader(portfolio=_portfolio)
             header.save()
-            print('hat auch noch geklappt')
             header.figures.add(alphaof)
-            print('hat nicht mehr geklappt')
             header.figures.add(betaof)
             header.figures.add(dailyreturnof)
             header.save()
@@ -185,7 +262,20 @@ def create_new_portfolio(request):
             # stocks erstellen
             for x in range(2, len(l)):  # ersten 2 sind token und portfolioname
                 # erstelle Stock
-                _portfolio.stock.create(tickersymbol=str(l[x][1]))
+                # price und name ziehen!
+                stockStatic.info_static = yf.Ticker(str(l[x][1])).info
+                stockStatic.hist_data = yf.Ticker(str(l[x][1])).history()
+                _stock_info = stockStatic.info_static
+
+                selected_stock = _portfolio.stock.create(
+                    tickersymbol=str(l[x][1]), fullname=_stock_info['longName'], price=_stock_info['regularMarketPrice'])
+
+                # den Stock ziehen
+                for the_figure in OverallFigure.objects.all():
+                    stock_figure = StockFigure(
+                        overallfigure=the_figure, stock=selected_stock, portfolio=_portfolio, stockfigureValue=run_figure_pythoncode(stockStatic.hist_data, stockStatic.info_static, the_figure.pythoncode))
+                    stock_figure.save()
+
             _portfolio.save()
             # in Warteschleife, bis in Datenbank erstellt!
             while len(Portfolio.objects.filter(portfolioname__exact=_portfolioname)) == 0:
@@ -207,7 +297,7 @@ def create_new_portfolio(request):
         else:
             messages.error(request, f'Portfolio of that name already exists')
 
-            print("Portfolio schon vorhanden")
+            print("Stock schon vorhanden")
             data = {
                 'status': 1,  # ist Misserfolg
                 'message': 'This Portfolio exists already. Choose another name.',
@@ -267,31 +357,63 @@ def add_stock_to_portfolio(request):
         l = []
         [l.extend([v]) for v in stockliste.items()]
 
-        print(len(Portfolio.objects.filter(portfolioname__exact=_portfolioname)))
-
         # portfolio erstellen - das bedeutet, dass das Portfolio vorhanden ist!
         if len(Portfolio.objects.filter(portfolioname__exact=_portfolioname)) == 1:
-            try:
-                dasPortfolio = Portfolio.objects.filter(
-                    portfolioname__exact=_portfolioname).get()
-                print(l)
-                for x in range(2, len(l)):  # ersten 2 sind token und portfolioname
-                    # erstelle Stock
-                    dasPortfolio.stock.create(Tickersymbol=str(l[x][1]))
-                    print(str(l[x][1]) + " hinzugefügt")
-                    dasPortfolio.save()
-                EingabeDerDaten = {
-                    'status': 0,  # ist Erfolg
-                    'message': 'everything went alright',
-                    'redirecturl': 'table/'+_portfolioname,
-                }
-            except:
-                EingabeDerDaten = {
-                    'status': 1,  # ist Erfolg
-                    'message': 'could not be added',
-                    'redirecturl': 'table/'+_portfolioname,
-                }
-            return JsonResponse(EingabeDerDaten, safe=False)
+            # try:
+            dasPortfolio = Portfolio.objects.filter(
+                portfolioname__exact=_portfolioname).get()
+
+            for x in range(2, len(l)):  # ersten 2 sind token und portfolioname
+                # erstelle Stock
+                stockStatic.info_static = yf.Ticker(str(l[x][1])).info
+                stockStatic.hist_data = yf.Ticker(str(l[x][1])).history()
+                _stock_info = stockStatic.info_static
+
+                selected_stock = dasPortfolio.stock.create(
+                    tickersymbol=str(l[x][1]), fullname=_stock_info['longName'], price=_stock_info['regularMarketPrice'])
+
+                # den Stock ziehen
+                for the_figure in OverallFigure.objects.all():
+                    stock_figure = StockFigure(
+                        overallfigure=the_figure, stock=selected_stock, portfolio=dasPortfolio, stockfigureValue=run_figure_pythoncode(stockStatic.hist_data, stockStatic.info_static, the_figure.pythoncode))
+                    stock_figure.save()
+
+                dasPortfolio.save()
+            EingabeDerDaten = {
+                'status': 0,  # ist Erfolg
+                'message': 'everything went alright',
+                'redirecturl': 'table/'+_portfolioname,
+            }
+            return JsonResponse(EingabeDerDaten)
+            # except Exception:
+            EingabeDerDaten = {
+                'status': 1,  # ist Erfolg
+                'message': 'could not be added',
+                'redirecturl': 'table/'+_portfolioname,
+            }
+            return JsonResponse(EingabeDerDaten)
+
+
+def run_figure_pythoncode(histdata, stock_info, pythoncode):
+    import sys
+    dailyreturns = []
+    ausgabe = ""
+    codeOut = StringIO()
+    sys.stdout = codeOut
+    pythoncode = """dailyreturns = []
+for x in range(1, len(histdata['Close'])):
+    dailyreturn = ((histdata['Close'][x]-histdata['Close'][x-1])/histdata['Close'][x])
+    dailyreturns.append(dailyreturn)
+ausgabe = str(round(dailyreturns[-1]*100, 2))+'%'
+print(ausgabe)"""
+
+    exec(pythoncode)
+    sys.stdout = codeOut
+    s = codeOut.getvalue()
+    print(s)
+    ausgabe = s
+    # Ausgabe immer als String bitte! Somit kann z.B. % angehängt werden!
+    return ausgabe
 
 
 @login_required

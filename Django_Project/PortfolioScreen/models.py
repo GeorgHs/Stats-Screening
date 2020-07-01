@@ -31,7 +31,7 @@ post_save.connect(countnumber, sender=Chart)
 
 class OverallFigure(models.Model):
     name = models.CharField(max_length=60)
-    pythoncode = models.TextField(max_length=60)
+    pythoncode = models.TextField(max_length=8000)
 
     def __str__(self):
         return self.name
@@ -48,6 +48,7 @@ class PortfolioFigure(models.Model):
 
 class Stock(models.Model):
     tickersymbol = models.CharField(max_length=60)
+    fullname = models.CharField(max_length=60, null=True, default='')
     price = models.CharField(max_length=60, null=True, default='')
 
     def __str__(self):
@@ -114,7 +115,7 @@ class StockFigure(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE, null=True)
     portfolio = models.ForeignKey(
         Portfolio, on_delete=models.CASCADE, null=True)
-    stockfigureValue = models.FloatField(max_length=60)
+    stockfigureValue = models.CharField(max_length=60)
 
     def __str__(self):
         return self.overallfigure.name

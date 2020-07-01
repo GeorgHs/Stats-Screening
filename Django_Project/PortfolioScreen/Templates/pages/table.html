@@ -21,14 +21,15 @@
     {% for stock in Stocks %}
     <tr id="{{stock.tickersymbol}}_tkr" class="table-figures">
         <td class="tb_tickersymbol">{{stock.tickersymbol}}</td>
-        <td class="tb_ISIN">{{stock.ISIN}}</td>
-        <td class="tb_length">{{ordinary_figures|length}}</td>
+        <td class="tb_name">{{stock.fullname}}</td>
+        <td class="tb_name">{{stock.price}}</td>
 
 
 
         {% for key,value in stock.get_all_stock_figures_right_order.items %}
 
         {% if portfolio_header != None %}
+
         {% if key|in_list:portfolio_header.figure_list %}
         <td class="tb_{{key}}">{{value}}</td>
         {% endif %}

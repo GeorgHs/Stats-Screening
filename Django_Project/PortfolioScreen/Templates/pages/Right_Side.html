@@ -5,6 +5,12 @@ UserSpec: {{UserSpec}}<br>
 {{UserSpec.last_name}}<br>
 {{UserSpec.email}}<br>
 <hr>
-{% for thefigure in PortfolioFigures %}
-{{thefigure.overallfigure}} : {{thefigure.figureValue}}<br>
-{% endfor %}
+<table>
+    {% for thefigure in PortfolioFigures %}
+    <tr class="portfolio_figure_{{thefigure.overallfigure}} figure_row">
+        <td>{{thefigure.overallfigure}}</td>
+        <td>
+            {{thefigure.figureValue}}</td>
+    </tr>
+    {% endfor %}
+</table>
