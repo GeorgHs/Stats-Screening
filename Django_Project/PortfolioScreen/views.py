@@ -246,7 +246,6 @@ def create_new_portfolio(request):
                 portfolioname=_portfolioname, fundmanager=request.user)
             _portfolio.save()
             alphaof = OverallFigure.objects.filter(name='Alpha').get()
-            betaof = OverallFigure.objects.filter(name='Beta').get()
             dailyreturnof = OverallFigure.objects.filter(
                 name='Daily Returns').get()
 
@@ -254,7 +253,6 @@ def create_new_portfolio(request):
             header = PortfolioFigureHeader(portfolio=_portfolio)
             header.save()
             header.figures.add(alphaof)
-            header.figures.add(betaof)
             header.figures.add(dailyreturnof)
             header.save()
 
@@ -262,6 +260,9 @@ def create_new_portfolio(request):
             # stocks erstellen
             for x in range(2, len(l)):  # ersten 2 sind token und portfolioname
                 # erstelle Stock
+                stockStatic.info_static = {}
+                stockStatic.hist_data = []
+                benchmarkStatic.hist_data = []
                 # price und name ziehen!
                 while len(stockStatic.info_static) <= 1:
                     stockStatic.info_static = yf.Ticker(str(l[x][1])).info
@@ -312,32 +313,13 @@ def create_new_portfolio(request):
 
 def create_figures():
     OverallFigure.objects.bulk_create([
-        OverallFigure(name="Beta", pythoncode="import pandas as pd \n"
-                      "import numpy as np \n"
-                      "import matplotlib.pyplot as plt \n"
-                      "import pandas_datareader as web \n"
-                      "from scipy import stats \n"
-                      "import seaborn as sns \n"
-                      "# Create a list of tickers and weights \n"
-                      "tickers = ['BND', 'VB', 'VEA', 'VOO', 'VWO'] \n"
-                      "wts = [0.1,0.2,0.25,0.25,0.2] \n"
-                      "price_data = web.get_data_yahoo(tickers, \n"
-                      "start = '2013-01-01', \n"
-                      "end = '2018-03-01') \n"
-                      "price_data = price_data['Adj Close'] \n"
-                      "ret_data = price_data.pct_change()[1:] \n"
-                      "port_ret = (ret_data * wts).sum(axis = 1) \n"
-                      "benchmark_price = web.get_data_yahoo('SPY', \n"
-                      "start = '2013-01-01', \n"
-                      "end = '2018-03-01') \n"
-                      "benchmark_ret = benchmark_price['Adj Close'].pct_change()[1:] \n"
-                      "(beta, alpha) = stats.linregress(benchmark_ret.values, "
-                      "port_ret.values)[0:2]"
-                      "print('The portfolio beta is', round(beta, 4)) \n"
+        OverallFigure(name="Daily Returns", pythoncode="dailyreturns=[]\n"
+                      "for x in range(1, len(histdata['Close'])):\n"
+                      "   dailyreturn=((histdata['Close'][x]-histdata['Close'][x-1])/histdata['Close'][x])\n"
+                      "   dailyreturns.append(dailyreturn)\n"
+                      "print(str(round(dailyreturns[-1]*100,2)),'%')\n"
                       ),
-
         OverallFigure(name="Alpha", pythoncode=""),
-        OverallFigure(name="Daily Returns", pythoncode=""),
     ])
 
 
@@ -369,6 +351,10 @@ def add_stock_to_portfolio(request):
                 portfolioname__exact=_portfolioname).get()
 
             for x in range(2, len(l)):  # ersten 2 sind token und portfolioname
+               
+                stockStatic.info_static = {}
+                stockStatic.hist_data = []
+                benchmarkStatic.hist_data = []
                 # erstelle Stock
                 while len(stockStatic.info_static) <= 1:
                     print(str(len(stockStatic.hist_data)))
