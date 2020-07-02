@@ -1,0 +1,14 @@
+@startuml
+
+|User|
+
+start
+:Portfolio has to be opened;
+:User selects stock;
+:User clicks on button remove stock;
+|System|
+:in Database/Model Stock is being removed from portfolio for that particular user;
+|GUI|
+:stock is removed from DOM (Table);
+stop
+@enduml

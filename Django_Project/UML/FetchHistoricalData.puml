@@ -1,0 +1,42 @@
+@startuml
+|User|
+
+start
+:Open Portfolio;
+
+split
+:Click on Refresh whole portfolio;
+split again
+:AddStock;
+split again
+:Add Or Remove Prerendered Figure;
+end split
+
+if (Portfolio contains below 20 items)
+
+else (Portfolio contains above 20 items)
+:(Pull up a dialog that contains a progress bar);
+endif
+|System|
+:fetch all daily prices of that particular stock in a pandas.DataFrame;
+if (failed)
+:this failed because the ticker is wrong;
+stop
+else (no fail)
+:calculate daily returns and save them in an extra dictionary;
+endif
+
+split
+:useful for calculating risk figures (all done in Python Pandas) \n(first and foremost annualised return, continuously compounded returns, \n mean absolute deviation, skewness, kurtosis, correlation);
+split again
+:useful for calculating descriptive figures (annualised return, continuously compounded returns, mean absolute deviation, skewness, kurtosis, correlation);
+split again
+:Regression (CAPM-figures);
+split again
+:Max Drawdown, further technical analysis;
+end split
+
+|GUI|
+:display calculated figure;
+stop
+@enduml

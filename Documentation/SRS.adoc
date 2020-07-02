@@ -1,0 +1,287 @@
+
+= Stats-Screening 
+:toc:
+:toclevels: 5
+:sectnums:
+:sectnumlevels: 5
+
+
+
+==	Introduction	
+===	Purpose	
+This SRS is meant to give specific details about the Stats-Screener we are about to develop. Stats-Screening is a piece of software supporting to select stocks that seem suited to the investor's objectives in the long term. This includes risk stats as well as performance stats among others. It is particularily valuable for investors favoring the 3/5-Factor-Fama-French model or broadly speeking factor investing. 
+
+This report sheds a light on reliability, usability for external developers and the view of the user. It might hint at potential obstacles that could slow down production and therefore extend production time considerably. _Written on 20.10.19_
+
+===	Scope
+Actors: There can be several users. Those create their own portfolio and then add figures per table. _Written on 20.10.19_
+
+Subsystems: 
+
+* Registration: all users can log in or sign up on the first time
+* Portfolio: The actual portfolio containing all of it's stocks and figures 
+* Exporting Portfolio: to export as pdf, csv, excel
+* Toolbox: contains all figures and charts
+* Opening&Saving Operations: saving only the TYPE of figures that have been added to the portfolio (all columns)
+* Registration: account can be created, removed and settings can be changed, all portfolios in DB are saved dependendant on the account
+* Stats-Screening Controller: When sending correct user  credentials, data in form of JSON-Ojects can be fetched through Get or Put-methods
+* Stats-Screening Model: This is the "Computation-Core". The database-API are also situated here.
+
+
+_Written on 20.10.19_
+
+===	Definitions, Acronyms, and Abbreviations
+
+.Abbrevation
+[width="100%",options="header,footer"]
+|====================
+| Abbr.  | full words
+| SRS | 	Software Requirements Specification
+| UC | 	Use Case 
+| n/a |	not applicable  
+| tbd |	to be determined
+|MTTR |	Mean Time To Repair
+|FAQ  |	Frequently asked Questions
+|BM | Benchmark
+|btw|between
+|pw |password
+|====================
+
+===	References
+
+.References
+[width="100%",options="header,footer"]
+|====================
+| Abbr.|date | full words
+| Github|20.10.2019 |  https://github.com/GeorgHs/Stats-Screening
+|  |  
+|  |  
+|  |  
+|====================
+===	Overview	
+The following chapters are about our vision and perspective, the software requirements, the demands we have, licensing and the technical realization of this project.
+
+==	Overall Description	
+
+=== Vision
+Main goal of Stats-Screening is to aid customers making a decent return on their money invested in equity stock. Since merely being a tool it's exported data (mainly static Excel spreadsheets so far) can be included in portfolio management software such as Bloomberg, FactSet or VWD.
+_Written on 20.10.19_
+
+=== UCD
+
+image::Use_Case_Diagram.png[USD]
+_Written on 20.10.19_
+
+all use cases are listed in the following blog entries:
+
+* https://hertzsch2.wixsite.com/stats-screening/post/___uc
+* https://hertzsch2.wixsite.com/stats-screening/post/use-cases-2-semester
+
+==	Specific Requirements	
+===	Functionality	
+This section will list all functional requirements for Stats-Screening and explain their functionality. Each of the following subsections represents a subsystem of our application.
+_Written on 20.10.19_
+
+====	Registration
+When entering stats-screening.com user can choose btw two options: loging in or signing up.
+
+* Upon signing up required to enter username, pw, email, company, company-image, pw again.
+* Upon logging in it's required to enter username, pw.
+
+==== Using a Portfolio
+This portfolio is the core element of the entire application. It can be constantly viewed by the consumer. It contains a list of all stocks, list of all figures and a few mandatory items such as ISIN and further information about the stock. Those information can be drawn from an API such as Google Finance/Yahoo Finance
+_Written on 25.11.19_
+
+==== Changing a Portfolio
+It should be possible to remove figures, switch the Api from which the data is drawn as well as the Benchmark. 
+
+==== Exporting Portfolio
+Export is an option which can be used to export the portfolio as Excel,Pdf,Csv. This will produce a file which is reusable in common portfolio management tools such as Bloomberg, FactSet, VWD. Those values can then be used for further purposes. So far only static values (pure values) are planned. If time remains:
+
+* an Excel Plugin which fetches the values and updates them any point in time set through our Controller is recommendable.
+* the optionity to export the charts would be nice to have 
+_Written on 25.11.19_
+
+==== Toolbox
+Contains all the figures and charts that can be added to the portfolio. The way of adding them is by simply clicking on them (or if time remains by moving them into the portfolio via drag&drop). The charts might also be added in the tab portfolio. Below the tab there can be a combobox & button used for adding the charts. 
+The Toolbox might contain all of the following numbers: _Written on 25.11.19_ 
+drawn from book "Practical Risk-Adjusted Performance Measurement" by Carl R. Bacon as published by Wiley
+_Written on 20.10.19_
+
+Descriptive stuff: 
+
+* annualised return
+* continuously compounded returns (or log returns)
+* mean absolute deviation 
+* skewness 
+* kurtosis 
+* correlation (other Benchmarks for instance)
+_Written on 20.10.19_
+
+Risk (but drawdown, see below):
+
+* sharpe ratio 
+* revised sharpe ratio 
+* adjusted sharpe ratio 
+* skewness-kurtosis ratio
+_Written on 20.10.19_
+
+Regression:
+
+* Jensen's Alpha (no diff. to "normal" regression alpha) 
+* Beta (systematic risk or vol) of Capital Asset Pricing Model  (no diff. to "normal" regression alpha)
+_Written on 20.10.19_
+
+Drawdown: 
+
+* Max Drawdown 
+_Written on 20.10.19_
+
+==== Opening&Saving Operations
+Opening a portfolio should be possible by simply opening a file which as before been saved.
+It contains all the ISINs and columns used.
+_Written on 25.11.19_
+
+==== Stats-Screening Accessing data
+By using the Post-method if correct credentials are transmitted, all required JSON-data will be fetched and then displayed in 1. the application's portfolio table, 2. if time remains in an Excel-spreadsheet through a plugin.
+The Controller fetches it's data from the Model.
+_Written on 25.11.19_
+
+
+
+===	Usability	
+====	Performance
+Even though it's a separate requirement, main goal of this application is quickness. The user should feel an ease when seeing the values refresh. If it isn't the user might feel annoyed and opt for a different tool. In contrast, fancy flashy GUI-features are not required.
+_Written on 20.10.19_
+
+==== Allowing usage among other tools
+Usually the end-user chooses to use several tools at once to do his/her real-time analysis. Therefore, it should be flexible to use and integration into excel would definitely be a plus.
+_Written on 20.10.19_
+
+===	Reliability	
+==== Downtime of server
+Downtime of the server is to be avoided at all times. 
+_Written on 20.10.19_
+
+==== No Bugs in number-crunshing
+There should be no bugs in number-crunshing with pandas. So 100% reliability on that part. The other parts shouldn't have any bugs but extensive testing (only simple testing) isn't required since there won't be enough time.
+_Written on 20.10.19_
+
+===	Performance	
+==== Response time
+As low as possible. We haven't coded anything quite like it, so I can't determine any fixed limitations.
+_Written on 20.10.19_
+
+==== Capacity
+For the start it merely will have to accommodate a few users. If future demand increases which is unlikely, since we are no portfolio management software company we will set up new servers
+_Written on 20.10.19_
+
+==== Connection Bandwidth
+The size of data to be synchronized between the server and client should be minimal, e.g. renaming an item must not lead to downloading all of existing data on the server.
+_Written on 20.10.19_
+
+===	Supportability	
+====	Coding Standards
+In order to maintain supportability and readability of our code, we will try to adopt the latest clean code standard as far as possible and use the http://google.github.io/styleguide/pyguide.html[Google Python Style Guide] for naming conventions, formatting and programming practices throughout the project.
+_Written on 20.10.19_
+
+==== Maintenance Utilities
+In order to test language and platform versions, a continuous integration service is required which runs tests on combinations of platform and language versions.
+_Written on 20.10.19_
+
+
+===	Design Constraints	
+==== Platforms supported
+We recommend using chrome as a browser. The lastest version of the Microsoft Edge and Firefox should also be fine.
+The server's operating system must support MySQL and programs compiled using Go. A RESTful API shall be used to communicate between client and server.
+_Written on 20.10.19_
+
+==== Technology stack
+Since it is a WebApp that deals with number-crunching we have choosen Pyhton Django and Python Pandas as main means. The Technologies used are as follows:
+
+* Back-End: 
+** Python Django 
+** database: SQLite
+
+* Implementation of Stats:  
+** https://pandas.pydata.org/about.html by Two Sigma and Anaconda (still BSD licence)
+** API: fmpcloud.io/documentation
+
+* Front-End:
+** https://jquery.com/  ,  https://jqueryui.com/ ,
+** NO REACT
+
+* CSS:  
+** https://getbootstrap.com/docs/4.3/layout/overview/ 
+
+* stats:  
+** https://pandas.pydata.org
+** Google: developers.google.com/chart/interactive/docs/gallery/scatterchart?hl=de
+** Charts:
+Google Charts/ChartJS (no Pandas visualisations)
+
+* Architecture: 
+** preferably MVC, as discussed in WE1 (if feasible with Django)
+
+* IDE: JetBrains PyCharm
+
+* VC: Github
+
+* Planning: YouTrack
+
+* Documentation: YouTrack, 
+** Language: mainly reStructuredText  https://wiki.python.org/moin/reStructuredText , for documents generally AsciiDoc( https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/ )
+
+
+===	Online User Documentation and Help System Requirements
+First we will start using tooltips (Mouse-Hover-Flags) to do the job. In Addition to that we will give an instructive page which shows goal-oriented FAQ, for instance, how to export a devised portfolio as an Excel-spreadsheet. Since it's not an overly complex application, a particularily detailed report with hundrets of pages won't be required. FAQ should be sufficient.
+
+===	Purchased Components
+The server and domain are run with Strato. One can reach it by browsing http://www.stats-screening.com[stats-screening.com]
+
+===	Interfaces	
+====	User Interfaces	
+* Registration: all users can log in or sign up on the first time
+* Portfolio: The actual portfolio containing all of it's stocks and figures 
+* Exporting Portfolio: to export as pdf, csv, excel
+* Toolbox: contains all figures and charts
+* Opening&Saving Operations: saving only the TYPE of figures that have been added to the portfolio (all columns)
+* Registration: account can be created, removed and settings can be changed, all portfolios in DB are saved dependendant on the account
+* Stats-Screening Controller: When sending correct user  credentials, data in form of JSON-Ojects can be fetched through Get or Put-methods
+* Stats-Screening Model: This is the "Computation-Core". The database-API are also situated here.
+
+For further information please check the hand-drafted pictures in the Documentation-folder on github. They are named GUIdraft1.__ , GUIdraft2.___,... .
+_Written on 20.10.19_
+
+====	Hardware Interfaces
+n/a_Written on 20.10.19_
+
+====	Software Interfaces	
+either web-browser or Windows-Forms/GUI-Application. Our goal is it for every developer to fetch the data of our Model independant of the view._Written on 20.10.19_
+
+====	Communications Interfaces
+This is going to be _Written on 20.10.19_
+
+===	Licensing Requirements	
+Our Software is running under GNU license._Written on 20.10.19_
+
+===	Legal, Copyright, and Other Notices	
+Despite thorough and extensive testing the Stats-Screening team will not take any responsibility for incorrect data or lost data._Written on 20.10.19_
+
+===	Applicable Standards
+The following Clean Code standards are going to be applied to the code as far as possible:
+
+* Intuitive names of variables and methods.
+* Comply with coding conventions of the language of choice (Google Python Style Guide).
+* Comments used to navigate through the code but not polluting it. ReStructuredText
+* Design patterns integration.
+* Each method does one thing and does it well.
+* No hard-coded strings.
+* No premature optimization.
+_Written on 20.10.19_
+
+==	Supporting Information
+for additional information please turn towards:
+Georg Hertzsch, Project Lead
+_Written on 20.10.19_
+

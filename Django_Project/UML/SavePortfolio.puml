@@ -1,0 +1,13 @@
+@startuml
+
+|User|
+
+start
+
+:User clicks on save my portfolio;
+|System|
+:whole portfolio is written through the model in database \n it is to be saved: \n ISINs, what kind of figures were used?;
+|GUI|
+:keep everything in table unchanged;
+stop
+@enduml

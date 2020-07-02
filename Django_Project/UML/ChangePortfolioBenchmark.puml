@@ -1,0 +1,14 @@
+@startuml
+
+|User|
+
+start
+
+:User clicks on Tab Portfolio Settings;
+:User then selects specified Benchmark through Combobox;
+|System|
+:then Portfolio is Refreshed (see RefreshingPortfolio);
+|GUI|
+:all recomputed figures are now shown in table;
+stop
+@enduml

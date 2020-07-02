@@ -1,0 +1,58 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor customer
+
+
+
+rectangle Application {
+customer -- (UC1)
+customer -- (UC3)
+customer -- (UC2)
+customer -- (UC5)
+(UC3) -- (Add a stock)
+(UC3) -- (Remove a stock)
+(UC3) -- (Change a stock's Ticker)
+
+note left of (UC3)
+    Refresh the specific
+    stock when edited!
+    (Reload values)
+end note
+
+(UC2) -- (As CSV-File)
+(UC2) -- (As Excel-File)
+(UC2) -- (As Pdf-File)
+rectangle Computations {
+
+
+(UC5) -- (add/remove prerendered figure)
+(UC5) -- (add custom-made figures)
+(UC5) -- (UC6)
+(UC6) -- (with Benchmark)
+(UC6) -- (without Benchmark)
+
+
+usecase UC6 as "compute figure"
+usecase UC5 as "manage figures"
+
+}
+(UC5) -- (display/export as chart - chart in picture format)
+usecase UC1 as "Viewing Portfolio \n preferably as table"
+
+usecase UC2 as "Fetching the \n portfolio through a file"
+
+usecase UC3 as "Editing Portfolio"
+}
+
+
+
+
+
+
+
+
+
+
+@enduml

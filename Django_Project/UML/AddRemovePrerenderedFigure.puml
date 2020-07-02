@@ -1,0 +1,24 @@
+@startuml
+|User|
+:has the intention to add figure;
+start
+:Open Portfolio;
+if (Toolbox open)
+
+else (Toolbox closed)
+:open the toolbox on left-hand side;
+endif
+
+if (Add figure)
+:Drag the figure-item \nand drop it off \nat the portfolio-page;
+else (Remove figure)
+:Select row of which the figure is to be removed;
+endif
+
+|System|
+:create Python dictionary/Pandas DataFrame with specified number;
+:remove or add specified columns/figures from JSON;
+|GUI|
+:remove or add entire column;
+stop
+@enduml

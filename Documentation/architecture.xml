@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><?asciidoc-toc?><?asciidoc-numbered?><article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+<info>
+<title>1. Introduction</title>
+<date>2020-04-30</date>
+</info>
+<section xml:id="_1_introduction">
+<title>1. Introduction</title>
+<section xml:id="_1_1_purpose">
+<title>1.1 Purpose</title>
+<simpara>This document provides a comprehensive architectural overview of the system, using a number of different architectural
+views to depict different aspects of the system. It is intended to capture and convey the significant architectural
+decisions which have been made on the system.</simpara>
+</section>
+<section xml:id="_1_2_scope">
+<title>1.2 Scope</title>
+<simpara>This document describes the technical architecture of the Stats-Screening project, including module structure and dependencies as
+well as the structure of classes.</simpara>
+</section>
+<section xml:id="_1_3_definitions_acronyms_and_abbreviations">
+<title>1.3 Definitions, Acronyms and Abbreviations</title>
+<simpara>| Abbreviation | Description                            |
+| ------------ | -------------------------------------- |
+| API          | Application programming interface      |
+| MVC          | Model View Controller                  |
+| REST         | Representational state transfer        |
+| SDK          | Software development kit               |
+| SRS          | Software Requirements Specification    |
+| UC           | Use Case                               |
+| VCS          | Version Control System                 |
+| N/A          | Not Applicable                         |</simpara>
+</section>
+<section xml:id="_1_4_references">
+<title>1.4 References</title>
+<simpara>| Reference                                                                        						              | Date       |
+|-----------------------------------------------------------------------------------------------------------|------------|
+| &lt;a href="https://hertzsch2.wixsite.com/stats-screening"&gt;Stats Screening Blog&lt;/a&gt;                         	| 25/12/2019 |
+| &lt;a href="https://github.com/GeorgHs/Stats-Screening"&gt;Git&lt;/a&gt;         				                              | 25/12/2019 |
+| &lt;a href="https://dhbw-karlsruhe.myjetbrains.com/youtrack/agiles/108-5/109-115"&gt;YouTrack&lt;/a&gt;			          | 25/12/2019 |</simpara>
+</section>
+<section xml:id="_1_5_overview">
+<title>1.5 Overview</title>
+<simpara>This document contains the architectural representation, goals and constraints.</simpara>
+</section>
+</section>
+<section xml:id="_2_architectural_representation">
+<title>2. Architectural Representation</title>
+<simpara>Our project bookly uses the classic MVC structure as follows:</simpara>
+<simpara>![MVC](MVC.png "Average MVC")</simpara>
+</section>
+<section xml:id="_3_architectural_goals_and_constraints">
+<title>3. Architectural Goals And Constraints</title>
+<simpara>Main technology is Django MVT. This framework includes backend as well as frontend operations. Besides, the controller/template and model language is Python. That way we have to worry about serialization.</simpara>
+</section>
+<section xml:id="_4_use_case_view">
+<title>4. Use-Case View</title>
+<simpara>This is our overall use-case diagram:</simpara>
+<simpara>![Use-case diagram](Use_Case_Diagram.png "Use Case Diagram")</simpara>
+</section>
+<section xml:id="_5_logical_view">
+<title>5. Logical View</title>
+<section xml:id="_5_1_overview">
+<title>5.1 Overview</title>
+<simpara>We split our architecture according to the MVC architecture as follows:</simpara>
+<simpara>Model: Model is going to act as the interface of your data. It is responsible for maintaining data. It is the logical data structure behind the entire application and is represented by a database (generally relational databases such as MySql, Postgres).
+View: The View is the user interface — what you see in your browser when you render a website. It is represented by HTML/CSS/Javascript and Jinja files.
+Template: A template consists of static parts of the desired HTML output as well as some special syntax describing how dynamic content will be inserted.</simpara>
+<simpara>Benefits of Django Architecture –</simpara>
+<literallayout class="monospaced">Rapid Development
+Loosely Coupled
+Ease of Modification</literallayout>
+<simpara>Drawbacks of MVC Architecture –</simpara>
+<literallayout class="monospaced">Too much load on Model Component
+Development Complexity is high
+Two components are controlling View</literallayout>
+<simpara>In Python Django its called Model View Template.
+![MVT](MVT.jpg "Python MVT")</simpara>
+<simpara>source: Telusko
+<emphasis role="marked">#</emphasis> 5.2 Architecturally Significant Design Packages</simpara>
+<simpara>We have a backend and a frontend module. The backend module contains our model. The frontend module contains our view.
+The Django MVT framework is realized. The controller cannot directly access the database.</simpara>
+</section>
+</section>
+<section xml:id="_6_process_view">
+<title>6. Process View</title>
+<simpara>N/A</simpara>
+</section>
+<section xml:id="_7_deployment_view">
+<title>7. Deployment View</title>
+<simpara>N/A</simpara>
+</section>
+<section xml:id="_8_implementation_view">
+<title>8. Implementation View</title>
+<simpara>N/A</simpara>
+</section>
+<section xml:id="_9_data_view">
+<title>9. Data View</title>
+<simpara>Our data view is modelled as followed:</simpara>
+<simpara>![DataView](DB.png "Data View")</simpara>
+</section>
+<section xml:id="_10_size_and_performance">
+<title>10. Size and Performance</title>
+<simpara>N/A</simpara>
+</section>
+<section xml:id="_11_qualitymetrics">
+<title>11. Quality/Metrics</title>
+<simpara>To ensure a high quality we are using continuous integration. It automatically builds, tests,
+measures and deploys the application, if the respective previous step has not failed. This happens periodically and when
+changes are pushed to a branch. When merging the master branch into the deployment branch, the application will
+automatically be deployed as well after pushing the button.</simpara>
+<simpara>For serving a most current documentation of our API, we are using autosummary/autodoc. It’s constantly being updated. Using Sphinx as documentation language.</simpara>
+</section>
+<section xml:id="_12_patterns">
+<title>12. Patterns</title>
+<simpara>N/A</simpara>
+</section>
+</article>

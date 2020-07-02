@@ -1,0 +1,18 @@
+@startuml
+
+|User|
+
+start
+
+:User clicks on Button Open Portfolio;
+|System|
+:(Model)load list with portfolios from that particular user from database;
+|GUI|
+:Dialog pulls up: Portfolio can be selected;
+:Portfolio is being written in table;
+|System|
+:calculate all figures that are saved in database;
+|GUI|
+:show all figures for each stock ;
+stop
+@enduml

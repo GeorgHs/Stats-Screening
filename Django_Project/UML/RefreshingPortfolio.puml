@@ -1,0 +1,35 @@
+@startuml
+|User|
+:has the intention to refresh the whole Portfolio;
+start
+:Open Portfolio;
+:Right Click on Table;
+:Click on Refresh whole portfolio;
+if (Portfolio contains below 20 items)
+
+else (Portfolio contains above 20 items)
+:(Pull up a dialog that contains a progress bar);
+endif
+|System|
+:fetch all data;
+if (failed)
+if (this is because of only one ticker)
+|User|
+:name ticker and suggest removal - but first, stop (or offer alternative API/Webscraping - later on?);
+stop
+else (all tickers failed)
+|User|
+:suggest that there are overall API-Issues (maybe offer option for switching API later on);
+stop
+endif
+else (no fail)
+
+endif
+
+
+|System|
+:rebuild Portfolio-dictionary;
+|GUI|
+:rebuild whole table;
+stop
+@enduml

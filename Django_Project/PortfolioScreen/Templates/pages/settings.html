@@ -1,0 +1,18 @@
+{% extends "PortfolioScreen/base.html" %}
+{% block content %}
+ <ul class="nav nav-pills">
+    <li class="nav-item">
+        <a class="nav-link" id="navtable" href="/table">Tabelle</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="navchart" href="/chart">Charts</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" id="navsettings" href="/settings">Settings</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link disabled" href="#">Disabled</a>
+    </li>
+</ul>
+<h1>Das ist {{title}}</h1>
+{% endblock content %}
