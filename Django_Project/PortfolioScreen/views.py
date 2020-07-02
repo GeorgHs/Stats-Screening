@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.template import context
 from django.http.response import JsonResponse
-from .temp_vars import portfolioStatic, stockStatic
+from .temp_vars import portfolioStatic, stockStatic, benchmarkStatic
 import xlsxwriter
 
 
@@ -263,9 +263,14 @@ def create_new_portfolio(request):
             for x in range(2, len(l)):  # ersten 2 sind token und portfolioname
                 # erstelle Stock
                 # price und name ziehen!
-                stockStatic.info_static = yf.Ticker(str(l[x][1])).info
-                stockStatic.hist_data = yf.Ticker(str(l[x][1])).history()
+                while len(stockStatic.info_static) <= 1:
+                    stockStatic.info_static = yf.Ticker(str(l[x][1])).info
+                while len(stockStatic.hist_data) <= 1:
+                    stockStatic.hist_data = yf.Ticker(str(l[x][1])).history()
+
                 _stock_info = stockStatic.info_static
+                while len(benchmarkStatic.hist_data) <= 1:
+                    benchmarkStatic.hist_data = yf.Ticker('^GSPC').history()
 
                 selected_stock = _portfolio.stock.create(
                     tickersymbol=str(l[x][1]), fullname=_stock_info['longName'], price=_stock_info['regularMarketPrice'])
@@ -365,13 +370,25 @@ def add_stock_to_portfolio(request):
 
             for x in range(2, len(l)):  # ersten 2 sind token und portfolioname
                 # erstelle Stock
-                stockStatic.info_static = yf.Ticker(str(l[x][1])).info
-                stockStatic.hist_data = yf.Ticker(str(l[x][1])).history()
+                while len(stockStatic.info_static) <= 1:
+                    print(str(len(stockStatic.hist_data)))
+                    stockStatic.info_static = yf.Ticker(str(l[x][1])).info
+
+                while len(stockStatic.hist_data) <= 1:
+                    print(str(len(stockStatic.hist_data)))
+                    stockStatic.hist_data = yf.Ticker(str(l[x][1])).history()
+
                 _stock_info = stockStatic.info_static
+
+                # in unserem Falle S&P 500
+                while len(benchmarkStatic.hist_data) <= 1:
+                    print(str(len(benchmarkStatic.hist_data)))
+                    benchmarkStatic.hist_data = yf.Ticker('^GSPC').history()
 
                 selected_stock = dasPortfolio.stock.create(
                     tickersymbol=str(l[x][1]), fullname=_stock_info['longName'], price=_stock_info['regularMarketPrice'])
 
+                print(OverallFigure.objects.all())
                 # den Stock ziehen
                 for the_figure in OverallFigure.objects.all():
                     stock_figure = StockFigure(
@@ -395,17 +412,13 @@ def add_stock_to_portfolio(request):
 
 
 def run_figure_pythoncode(histdata, stock_info, pythoncode):
+
     import sys
-    dailyreturns = []
-    ausgabe = ""
     codeOut = StringIO()
+    dailyreturns = []
+    ausgabe = "1.0"
     sys.stdout = codeOut
-    pythoncode = """dailyreturns = []
-for x in range(1, len(histdata['Close'])):
-    dailyreturn = ((histdata['Close'][x]-histdata['Close'][x-1])/histdata['Close'][x])
-    dailyreturns.append(dailyreturn)
-ausgabe = str(round(dailyreturns[-1]*100, 2))+'%'
-print(ausgabe)"""
+    pythoncode = "" + pythoncode + ""
 
     exec(pythoncode)
     sys.stdout = codeOut
@@ -414,6 +427,10 @@ print(ausgabe)"""
     ausgabe = s
     # Ausgabe immer als String bitte! Somit kann z.B. % angehängt werden!
     return ausgabe
+
+
+def test(histdata, stock_info, pythoncode):
+    print(histdata)
 
 
 @login_required

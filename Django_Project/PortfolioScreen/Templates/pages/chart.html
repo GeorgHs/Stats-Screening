@@ -6,8 +6,8 @@
     </a>
 
     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-        <a id="pie" class="dropdown-item" href="#">Pie Chart</a>
-        <a id="bar" class="dropdown-item" href="#">Bar Chart</a>
+        <a id="line-chart" class="dropdown-item" href="#">Pie Chart</a>
+        <a id="pie-chart" class="dropdown-item" href="#">Bar Chart</a>
         <a class="dropdown-item" href="#"></a>
     </div>
 </div>
@@ -26,12 +26,12 @@
 
         // The data for our dataset
         data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            labels: ['June 1st', 'June 3rd', 'June 5th', 'June 7th', 'June 9th', 'June 11th', 'June 14th', 'June 18th', 'June 22nd', 'June 24th', 'June 27th', 'June 29th'],
             datasets: [{
-                label: 'My First dataset',
+                label: 'Returns',
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(255, 99, 132)',
-                data: [0, 10, 5, 2, 20, 30, 45]
+                data: [0, 2, 3, 2, 3, 2, 4, 2, 3, 2, 5, 4, 1, 0, 2, -3, -2, -5]
             }]
         },
 

@@ -4,4 +4,8 @@ class portfolioStatic:
 
 class stockStatic:
     hist_data = []
-    info_static = []
+    info_static = {}
+
+
+class benchmarkStatic:
+    hist_data = []
